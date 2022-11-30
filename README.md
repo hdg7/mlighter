@@ -6,8 +6,9 @@ The tool also comes with a Docker container to make your life easier. If you wan
 
 If you use MLighter, please cite the paper:
 
-Menendez, Hector D. (2022). Measuring Machine Learning Robustness in front of Static and Dynamic Adversaries. In Measuring Machine Learning Robustness in front of Static and Dynamic Adversaries. IEEE 34rd International Conference on Tools with Artificial Intelligence (ICTAI).
+*Menendez, Hector D. (2022). Measuring Machine Learning Robustness in front of Static and Dynamic Adversaries. In Measuring Machine Learning Robustness in front of Static and Dynamic Adversaries. IEEE 34rd International Conference on Tools with Artificial Intelligence (ICTAI).*
 
+```
 @incollection{menendez2022measuring,
   title={Measuring Machine Learning Robustness in front of Static and Dynamic Adversaries},
   author={Menendez, Hector D.},
@@ -15,7 +16,7 @@ Menendez, Hector D. (2022). Measuring Machine Learning Robustness in front of St
   year={2022},
   publisher={IEEE 34rd International Conference on Tools with Artificial Intelligence (ICTAI)}
 }
-
+```
 
 ## Testing Models Reliability.
 
