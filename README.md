@@ -23,7 +23,11 @@ This section allows to use a model and test its reliability under adversarial co
 
 ## Testing Bugs in Code.
 
+This part of the tool in based on fuzzing and aims to identify crashes in the code. To run this part you need to create a parametrized template of your code so the fuzzer can start applying different strategies to it. 
+
 ## Identifying Performance Issues.
+
+The part extends the previous one to also identify hangs in the code depending on the parameters.
 
 ## Graphical User Interface
 
