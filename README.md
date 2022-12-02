@@ -1,8 +1,15 @@
 # MLighter
 
+<br />
+<img align="left" src="http://mlighter.freedevelop.org/wp-content/uploads/2022/02/cropped-logo5.png" width="140" height="160"/>
+
 MLighter is a tool for machine learning testing that aims to integrate three testing levels: performance, security and reliability. The tool can be used as a library although it also contains a graphical user interface that aims to connect all the different levels.
 
 The tool also comes with a Docker container to make your life easier. If you want to install it, please follow the instructions underneath.
+
+<br />
+
+## Citation
 
 If you use MLighter, please cite the paper:
 
