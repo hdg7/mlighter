@@ -9,6 +9,7 @@ The tool also comes with a Docker container to make your life easier. If you wan
 
 <br />
 
+
 ## Citation
 
 If you use MLighter, please cite the paper:
@@ -27,7 +28,7 @@ If you use MLighter, please cite the paper:
 
 ## Testing Models Reliability.
 
-This section allows to use a model and test its reliability under adversarial conditions. Currently, we allow only models in SKlearn. You just need to include an instance of your input data and test your model directly. Remember that the model needs to respect the 
+This section allows to use a model and test its reliability under adversarial conditions. Currently, we allow only models in SKlearn. You just need to include an instance of your input data and test your model directly. Remember that the input needs to respect the models feature space. 
 
 ## Testing Bugs in Code.
 
