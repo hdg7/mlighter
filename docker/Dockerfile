@@ -55,6 +55,7 @@ ADD initScript.bash /home/advml/initScript.bash
 COPY mlighter /home/advml/mlighter
 WORKDIR /home/advml/mlighter
 EXPOSE 8888
+ENV MLIGHTER_HOME=/home/advml/mlighter
 RUN chmod 755 /home/advml/initScript.bash
 CMD ["/home/advml/initScript.bash"]
 #USER root
