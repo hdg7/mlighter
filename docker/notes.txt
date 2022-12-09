@@ -1,3 +1,5 @@
 docker build . --tag mlighter
 docker run --cpus="1.0" -p 8888:8888 -it mlighter:latest
 docker run --cpus="1.0" -p 8888:8888 -it mlighter:latest bash
+voila --template vuetify-default --enable_nbextensions=True frontend/WholeInterface.ipynb --Voila.ip=0.0.0.0 --port 8888 --no-browser --Voila.tornado_settings='{"websocket_max_message_size":100000000}'
+

@@ -49,7 +49,8 @@ RUN make install
 #Installing the jupyter interface
 USER root
 RUN pip3 install --upgrade pip
-RUN pip3 install numpy jupyter pandas joblib scikit-image sklearn python-afl voila ipyvuetify jupyter_contrib_nbextensions voila-vuetify bqplot deap
+RUN pip3 install numpy jupyter pandas joblib scikit-image scikit-learn python-afl voila ipyvuetify jupyter_contrib_nbextensions voila-vuetify bqplot deap
+RUN pip3 install ipywidgets==7.7.1
 WORKDIR /home/advml/
 ADD initScript.bash /home/advml/initScript.bash 
 COPY mlighter /home/advml/mlighter
