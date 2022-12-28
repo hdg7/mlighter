@@ -21,7 +21,15 @@ import sys
 import sched,time
 import os
 
-sys.path.append(os.environ["MLIGHTER_HOME"])
+
+try:
+    home = os.environ["MLIGHTER_HOME"]
+except KeyError:
+    home = os.environ["HOME"]
+    home += "/mlighter/mlighter"
+home += "/backend"
+sys.path.append(home)
+
 from MLighter import MLighter
 
 s = sched.scheduler(time.time, time.sleep)
