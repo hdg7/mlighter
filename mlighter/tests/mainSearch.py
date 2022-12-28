@@ -26,17 +26,17 @@ try:
     home = os.environ["MLIGHTER_HOME"]
 except KeyError:
     home = os.environ["HOME"]
-    home += "/mlighter/mlighter"
-home += "/backend"
-sys.path.append(home)
+    homeTool = home + "/mlighter/mlighter"
+homeLib = homeTool + "/backend"
+sys.path.append(homeLib)
 
 from MLighter import MLighter
 iris = datasets.load_iris()
-session = MLighter(parameters)
+session = MLighter()
 session.uploadDataset("structured",datasetName="iris",actualData=iris.data,
                       targetData=iris.target)
 #print(session.data.getColumns())
-session.uploadModel("sklearn","iris",modelUrl="example/irisProb.joblib")
+session.uploadModel("sklearn","iris",modelUrl=homeTool + "/tests/example/irisProb.joblib")
 #session.data.cleanColumn("Unnamed: 0")
 session.prediction(session.data.data)
 session.chooseStrategy("search")
