@@ -58,6 +58,8 @@ WORKDIR /home/advml/mlighter
 EXPOSE 8888
 ENV MLIGHTER_HOME=/home/advml/mlighter
 RUN chmod 755 /home/advml/mlighter/initScript.bash
+#For Windows users
+RUN sed -i -e 's/\r$//' /home/advml/mlighter/initScript.bash
 CMD ["/home/advml/mlighter/initScript.bash"]
 #USER root
 
