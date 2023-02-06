@@ -50,14 +50,14 @@ RUN make install
 USER root
 RUN pip3 install --upgrade pip
 RUN pip3 install numpy jupyter pandas joblib scikit-image scikit-learn python-afl voila ipyvuetify jupyter_contrib_nbextensions voila-vuetify bqplot deap
-RUN pip3 install ipywidgets==7.7.1
+RUN pip3 install ipywidgets
 WORKDIR /home/advml/
-ADD initScript.bash /home/advml/initScript.bash 
 COPY mlighter /home/advml/mlighter
+ADD initScript.bash /home/advml/mlighter/initScript.bash 
 WORKDIR /home/advml/mlighter
 EXPOSE 8888
 ENV MLIGHTER_HOME=/home/advml/mlighter
-RUN chmod 755 /home/advml/initScript.bash
-CMD ["/home/advml/initScript.bash"]
+RUN chmod 755 /home/advml/mlighter/initScript.bash
+CMD ["/home/advml/mlighter/initScript.bash"]
 #USER root
 
