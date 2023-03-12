@@ -12,7 +12,7 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-#  
+#
 #  Documentation for this module.
 #
 #  More details.
@@ -23,17 +23,25 @@ import hashlib
 from .genAlg import GAOptimizer
 from deap import creator, base, tools, algorithms
 
-#Optimizer parameters
-#numTuples = int(ConfigSectionMap("Optimizer")['numtuples'])
+# Optimizer parameters
+# numTuples = int(ConfigSectionMap("Optimizer")['numtuples'])
+
 
 class GAOptimizerMul(GAOptimizer):
-        
-    def evalFitness(self,individual):
+    def evalFitness(self, individual):
         return self.fitness(individual)
 
     #    def fitness(self,inputs):
     #        return 1
-    def spea2(self,pop,toolbox,num_gens=100,sel_factor_pop=80,sel_factor_arch=40,mut_prob=0.06):
+    def spea2(
+        self,
+        pop,
+        toolbox,
+        num_gens=100,
+        sel_factor_pop=80,
+        sel_factor_arch=40,
+        mut_prob=0.06,
+    ):
         archive = []
         curr_gen = 1
 
@@ -43,11 +51,11 @@ class GAOptimizerMul(GAOptimizer):
             for ind in pop:
                 ind.fitness.values = toolbox.evaluate(ind)
 
-#            for ind in archive:
-#                ind.fitness.values = toolbox.evaluate(ind)
+            #            for ind in archive:
+            #                ind.fitness.values = toolbox.evaluate(ind)
 
             # Step 3 Environmental selection
-            archive  = toolbox.select(pop + archive, k=sel_factor_arch)
+            archive = toolbox.select(pop + archive, k=sel_factor_arch)
 
             # Step 4 Termination
             if curr_gen >= num_gens:
@@ -67,7 +75,15 @@ class GAOptimizerMul(GAOptimizer):
             pop = offspring_pool
             curr_gen += 1
 
-    def spea2Rand(self,pop,toolbox,num_gens=100,sel_factor_pop=80,sel_factor_arch=40,mut_prob=0.06):
+    def spea2Rand(
+        self,
+        pop,
+        toolbox,
+        num_gens=100,
+        sel_factor_pop=80,
+        sel_factor_arch=40,
+        mut_prob=0.06,
+    ):
         archive = []
         curr_gen = 1
 
@@ -79,17 +95,16 @@ class GAOptimizerMul(GAOptimizer):
             for ind in archive:
                 ind.fitness.values = toolbox.evaluate(ind)
             # Step 3 Environmental selection
-            archive  = toolbox.select(pop + archive, k=sel_factor_arch)
+            archive = toolbox.select(pop + archive, k=sel_factor_arch)
             # Step 4 Termination
             if curr_gen >= num_gens:
                 return archive
             population = toolbox.population(n=self.populationSize)
             curr_gen += 1
 
-            
     def optimize(self):
-        self.objectives=2
-        weights=tuple(1.0 for i in range(self.objectives))
+        self.objectives = 2
+        weights = tuple(1.0 for i in range(self.objectives))
         creator.create("FitnessMax", base.Fitness, weights=weights)
         creator.create("Individual", list, fitness=creator.FitnessMax)
         toolbox = base.Toolbox()
@@ -99,24 +114,35 @@ class GAOptimizerMul(GAOptimizer):
         toolbox.register("mate", tools.cxTwoPoint)
         toolbox.register("mutate", self.mutUniform)
         toolbox.register("select", tools.selSPEA2)
-        toolbox.register("selectTournament", tools.selTournament,tournsize=self.tournamentSel)
-        #toolbox.register("elitism", tools.selBest, k=numSel)
+        toolbox.register(
+            "selectTournament", tools.selTournament, tournsize=self.tournamentSel
+        )
+        # toolbox.register("elitism", tools.selBest, k=numSel)
         population = toolbox.population(n=self.populationSize)
         # The genetic algorithm, this implementation ia mu+lambda
         # it is feeded with a population of individuals, a mutation
         # and crossover probabilities and a number of generations
-        final_set = self.spea2(pop=population,toolbox=toolbox,num_gens=self.numGen,sel_factor_pop=80,sel_factor_arch=40,mut_prob=self.mutProb)
+        final_set = self.spea2(
+            pop=population,
+            toolbox=toolbox,
+            num_gens=self.numGen,
+            sel_factor_pop=80,
+            sel_factor_arch=40,
+            mut_prob=self.mutProb,
+        )
         # the top ten individuals are printed
-        #topTen = tools.selBest(population, k=10)
-        #print(topTen)
-        with open('pareto', 'w') as f:
+        # topTen = tools.selBest(population, k=10)
+        # print(topTen)
+        with open("pareto", "w") as f:
             for ind in final_set:
-                f.write("%s %s\n" % (str(ind.fitness.values[0]), str(ind.fitness.values[1])))
-        return(final_set)
+                f.write(
+                    "%s %s\n" % (str(ind.fitness.values[0]), str(ind.fitness.values[1]))
+                )
+        return final_set
 
     def greedy(self):
-        self.objectives=2
-        weights=tuple(1.0 for i in range(self.objectives))
+        self.objectives = 2
+        weights = tuple(1.0 for i in range(self.objectives))
         creator.create("FitnessMax", base.Fitness, weights=weights)
         creator.create("Individual", list, fitness=creator.FitnessMax)
         toolbox = base.Toolbox()
@@ -126,17 +152,27 @@ class GAOptimizerMul(GAOptimizer):
         toolbox.register("mate", tools.cxTwoPoint)
         toolbox.register("mutate", self.mutUniform)
         toolbox.register("select", tools.selSPEA2)
-        toolbox.register("selectTournament", tools.selTournament,tournsize=self.tournamentSel)
-        #toolbox.register("elitism", tools.selBest, k=numSel)
+        toolbox.register(
+            "selectTournament", tools.selTournament, tournsize=self.tournamentSel
+        )
+        # toolbox.register("elitism", tools.selBest, k=numSel)
         population = toolbox.population(n=self.populationSize)
 
-        final_set = self.spea2Rand(pop=population,toolbox=toolbox,num_gens=self.numGen,sel_factor_pop=80,sel_factor_arch=40,mut_prob=self.mutProb)
+        final_set = self.spea2Rand(
+            pop=population,
+            toolbox=toolbox,
+            num_gens=self.numGen,
+            sel_factor_pop=80,
+            sel_factor_arch=40,
+            mut_prob=self.mutProb,
+        )
         # the top ten individuals are printed
-        #topTen = tools.selBest(population, k=10)
-        #print(topTen)
-        with open('paretoGreedy', 'w') as f:
+        # topTen = tools.selBest(population, k=10)
+        # print(topTen)
+        with open("paretoGreedy", "w") as f:
             for ind in final_set:
                 print(ind)
-                f.write("%s %s\n" % (str(ind.fitness.values[0]), str(ind.fitness.values[1])))
-        return(final_set)
-        
+                f.write(
+                    "%s %s\n" % (str(ind.fitness.values[0]), str(ind.fitness.values[1]))
+                )
+        return final_set

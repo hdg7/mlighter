@@ -12,7 +12,7 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-#  
+#
 #  Documentation for this module.
 #
 #  More details.
@@ -21,16 +21,15 @@ from .mlModel import MLModel
 from io import BytesIO
 from tempfile import TemporaryFile
 
+
 class MLModelSkLearn(MLModel):
-
-    def loadModel(self,modelURL):
+    def loadModel(self, modelURL):
         self.model = load(modelURL)
-        print("loaded",type(self.model))
+        print("loaded", type(self.model))
 
-    def loadModelIO(self,modelFile):
-        fileTemp=TemporaryFile(mode="w+b")
+    def loadModelIO(self, modelFile):
+        fileTemp = TemporaryFile(mode="w+b")
         fileTemp.write(modelFile)
         fileTemp.seek(0)
-        self.model=load(fileTemp)
-        print("loaded",type(self.model))
-        
+        self.model = load(fileTemp)
+        print("loaded", type(self.model))
