@@ -20,7 +20,7 @@ from .mlEvasion import MLEvasion
 import numpy as np
 
 
-class MLEvasionDiscreetNoise(MLEvasion):
+class MLEvasionDiscreteNoise(MLEvasion):
     def setNoise(self, noise):
         self.noise = noise
 

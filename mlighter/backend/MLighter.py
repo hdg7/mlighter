@@ -35,9 +35,9 @@ import multiprocessing
 
 class MLighter:
     def __init__(self, parameters={}):
-        self.currentFolder = None
-        self.inputsFolder = None
-        self.outputsFolder = None
+        self.currentFolder = ""
+        self.inputsFolder = ""
+        self.outputsFolder = ""
         self.proc = None
         if "name" in parameters:
             self.name = parameters["name"]
@@ -142,7 +142,7 @@ class MLighter:
             self.currentFolder = folderPath
 
     def uploadCodeTemplate(self, language="python", fileName=None, codeContent=None):
-        if self.currentFolder is None:
+        if not self.currentFolder:
             self.setCurrentFolder()
         if not language == "python":
             print("language not supported")
@@ -163,9 +163,10 @@ class MLighter:
             print("You need to provide the template")
 
     def uploadCodeInput(self, fileName=None, codeContent=None):
-        if self.currentFolder is None:
+        if not self.currentFolder:
             self.setCurrentFolder()
-        if self.inputsFolder is None:
+
+        if not self.inputsFolder:
             self.testExperimentName = "exp_" + str(
                 datetime.datetime.timestamp(datetime.datetime.now())
             )
@@ -175,73 +176,76 @@ class MLighter:
             self.outputsFolder = (
                 self.currentFolder + "/outputs_" + self.testExperimentName
             )
-            os.system("mkdir " + self.inputsFolder)
-            print("mkdir " + self.inputsFolder)
+
+            try:
+                os.mkdir(self.inputsFolder)
+            except OSError as error:
+                print(error)
+                exit(-1)
+
         if fileName is not None:
             print(fileName)
             self.caseInput = os.system("cp " + fileName + " " + self.inputsFolder)
-        elif not codeContent is None:
+        elif codeContent is not None:
             self.caseInput = (
                 "input_"
                 + str(datetime.datetime.timestamp(datetime.datetime.now()))
                 + ".txt"
             )
-            f = open(self.inputsFolder + "/" + self.caseInput, "wb")
-            f.write(codeContent)
-            f.close()
+            with open(self.inputsFolder + "/" + self.caseInput, "wb") as f:
+                f.write(codeContent)
         else:
             print("You need to provide the input")
 
     def runCodeTesting(self):
         if self.proc is None:
-            # print("Preparing running process")
+            # TODO figure out how to remove screen dependency
             self.proc = subprocess.Popen(
                 [
                     "screen",
                     "-d",
                     "-m",
-                    "-S mlTest",
+                    "-S",
+                    "mlTest",
                     "py-afl-fuzz",
-                    "-m 4000",
+                    "-m",
+                    "4000",
                     "-t10000",
-                    "-i ",
-                ]
-                # "screen -d -m -S mlTest py-afl-fuzz -m 4000 -t10000 -i "
-                + self.inputsFolder
-                + " -o "
-                + self.outputsFolder
-                + " -- python3 "
-                + self.codeTemplate
-                + " @@",
+                    "-i",
+                    self.inputsFolder,
+                    "-o",
+                    self.outputsFolder,
+                    "-- python3",
+                    self.codeTemplate,
+                    " @@",
+                ],
                 shell=True,
                 stdout=subprocess.PIPE,
                 stdin=subprocess.PIPE,
             )
             self.lastUpdate = multiprocessing.Value("i", 0)
-            # print('screen -d -m -S mlTest py-afl-fuzz -m 4000 -t10000 -i ' + self.inputsFolder + ' -o ' + self.outputsFolder + ' -- python3 ' + self.codeTemplate + ' @@')
-            # print("Process running")
-        #      for stdout_line in iter(self.proc.stderr.readline, ""):
-        #        yield stdout_line
         else:
             print("There is a process running")
 
     def retrieveTestingState(self):
-        if self.outputsFolder is not None:
+        if self.outputsFolder:
             with open(self.outputsFolder + "/fuzzer_stats", "r") as f:
                 data = f.readlines()
                 dictData = {}
                 for elem in data:
                     for elem in data:
-                        dictData[elem.strip().split()[0]] = elem.strip().split()[2]
-                    if self.lastUpdate.value != int(dictData["last_update"]):
+                        kv = elem.strip().split()
+                        dictData[kv[0]] = kv[2]
+                    with self.lastUpdate.get_lock():
+                        # if self.lastUpdate.value != int(dictData["last_update"]):
                         self.lastUpdate.value = int(dictData["last_update"])
-                        return {
-                            "Current Time": dictData["last_update"],
-                            "Execs": dictData["execs_done"],
-                            "Paths": dictData["paths_total"],
-                            "Crashes": dictData["unique_crashes"],
-                            "Hangs": dictData["unique_hangs"],
-                        }
+                    return {
+                        "Current Time": dictData["last_update"],
+                        "Execs": dictData["execs_done"],
+                        "Paths": dictData["paths_total"],
+                        "Crashes": dictData["unique_crashes"],
+                        "Hangs": dictData["unique_hangs"],
+                    }
         else:
             # TODO
             pass
