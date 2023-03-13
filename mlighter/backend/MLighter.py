@@ -127,19 +127,23 @@ class MLighter:
             print("you need to provde the code")
 
         if not codeReviewData:
-            return
+            exit(-1)
         else:
             try:
                 self.codeReviewTree = ast.parse(codeReviewData)
-            except SyntaxError:
-                print("invalid syntax")
-                return
+            except SyntaxError as error:
+                print(f"invalid syntax {error}")
+                exit(-1)
 
     def setCurrentFolder(self, folderPath=None):
         if folderPath is None:
             self.currentFolder = os.getcwd()
         else:
-            self.currentFolder = folderPath
+            if os.path.isdir(folderPath):
+                self.currentFolder = folderPath
+            else:
+                # TODO what is the sensible default behaviour?
+                pass
 
     def uploadCodeTemplate(self, language="python", fileName=None, codeContent=None):
         if not self.currentFolder:

@@ -17,13 +17,16 @@
 #
 #  More details.
 from .mlData import MLDataset
-import joblib
-from skimage.io import imread
-from skimage.transform import resize
+
+# import joblib
+# from skimage.io import imread
+# from skimage.transform import resize
+import pandas as pd
+import io
 
 
 class MLDataImage(MLDataset):
-    def loadData(self, className=None, dataFile=None):
+    def loadData(self, className=None, dataFile=None, actualData=None, targetData=None):
         if not dataFile is None:
             self.data = pd.read_csv(io.BytesIO(dataFile))
         else:

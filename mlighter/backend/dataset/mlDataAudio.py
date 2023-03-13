@@ -20,5 +20,5 @@ from .mlData import MLDataset
 
 
 class MLDataAudio(MLDataset):
-    def loadData(self, className=None, dataFile=None):
+    def loadData(self, className=None, dataFile=None, actualData=None, targetData=None):
         pass
