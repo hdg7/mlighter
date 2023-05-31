@@ -55,6 +55,22 @@ The User Interface is based on Vue and Voila. It is performed in top of a dashbo
 
 Please check the docker file if you want to see the specific libraries that you need to install. We have tested the system in 8064 architectures, but we are aware that Arm64 architectures are not compatible with the libraries of the Docker file.
 
+## Running Docker
+
+If you want to create and run the docker file, you should use:
+```
+docker build . --network=host --tag=mlighter
+```
+
+If you need to run it use:
+```
+docker run --cpus="1.0" --network host -it mlighter:latest
+```
+
+Feel free to replace the CPUs by the number of CPUs you want to use.
+
+Once docker is running, it will activate the GUI, you can access through the browser in: localhost:8888
+
 ## Running MLigther as a library
 
 Please check the tests to see some examples.
