@@ -27,6 +27,7 @@ try:
 except KeyError:
     home = os.environ["HOME"]
     home += "/mlighter/mlighter"
+tests = home + "/tests"
 home += "/backend"
 sys.path.append(home)
 
@@ -45,8 +46,8 @@ def do_something(sc,session):
     sc.enter(1, 1, do_something, (sc,session))      
 #sys.path.append(os.environ["EURY_HOME"])
 
-session.uploadCodeTemplate(language="python",fileName="/home/hector/mlighter/test/example/sklearnLogRegTest.py")
-session.uploadCodeInput(fileName="/home/hector/mltest/pythonTest/inputLogReg/inputLogReg.bin.npy")
+session.uploadCodeTemplate(language="python",fileName=tests+"/example/sklearnLogRegTest.py")
+session.uploadCodeInput(fileName=tests+"/example/inputLogReg.bin.npy")
 session.runCodeTesting()
 s.enter(1, 1, do_something, (s,session,))
 s.run()
