@@ -1,7 +1,7 @@
 FROM debian:11
 
-RUN apt-get update
-RUN apt-get install -yq --fix-missing build-essential emacs-nox vim-tiny git inkscape jed libsm6 libxext-dev libxrender1 lmodern netcat python-dev tzdata unzip nano emacs ca-certificates wget gcc curl screen  nginx 
+RUN apt-get -y update
+RUN apt-get install -yq --fix-missing build-essential emacs-nox vim-tiny git inkscape jed libsm6 libxext-dev libxrender1 lmodern netcat python-dev tzdata unzip nano emacs ca-certificates wget gcc-10 gcc-10-plugin-dev curl screen  nginx clang llvm lld
 
 #Extras for R
 RUN apt-get install -yq gfortran libreadline-dev zlib1g-dev librust-bzip2-dev liblzma-dev libpcre2-dev libcurl4-openssl-dev
@@ -14,9 +14,9 @@ RUN useradd -ms /bin/bash advml
 USER advml
 WORKDIR /home/advml
 
-#Install AFL
-RUN git clone https://github.com/google/AFL.git
-WORKDIR /home/advml/AFL
+#Install AFL++
+RUN git clone https://github.com/AFLplusplus/AFLplusplus.git
+WORKDIR /home/advml/AFLplusplus
 RUN make
 USER root
 RUN make install
@@ -40,7 +40,7 @@ WORKDIR /home/advml
 RUN curl -O https://www.python.org/ftp/python/3.10.0/Python-3.10.0.tgz
 RUN tar -xvzf Python-3.10.0.tgz
 WORKDIR /home/advml/Python-3.10.0
-RUN CC=/home/advml/AFL/afl-gcc CXX=/home/advml/AFL/afl-g++ ./configure --enable-static --disable-shared
+RUN CC=/home/advml/AFLplusplus/afl-gcc CXX=/home/advml/AFLplusplus/afl-g++ ./configure --enable-static --disable-shared
 RUN make
 USER root
 RUN make install

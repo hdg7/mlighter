@@ -160,23 +160,32 @@ class MLighter:
 #        yield stdout_line
     else:
       print("There is a process running")
-    
-  def retrieveTestingState(self):
-    f = open(self.outputsFolder + "/fuzzer_stats", "r")
+
+      
+  def retrieveTestingState(self,AFLOri=None):
+    if AFLOri is None:
+      f = open(self.outputsFolder + "/default/fuzzer_stats", "r")
+    else:
+      f = open(self.outputsFolder + "/fuzzer_stats", "r")
     data=f.readlines()
     dictData={}
-    for elem in data: 
+    for elem in data:
         dictData[elem.strip().split()[0]]=elem.strip().split()[2]
     if(self.lastUpdate.value != int(dictData["last_update"])):
         self.lastUpdate.value=int(dictData["last_update"])
-        return {"Current Time" : dictData["last_update"],
+        if not AFLOri is None:
+          return {"Current Time" : dictData["last_update"],
                 "Execs" : dictData["execs_done"],
                 "Paths" : dictData["paths_total"],
                 "Crashes" : dictData["unique_crashes"],
                 "Hangs" : dictData["unique_hangs"]}
-        
-
-
+        else:
+          return {"Current Time" : dictData["last_update"],
+                "Execs" : dictData["execs_done"],
+                "Paths" : dictData["pending_total"],
+                "Crashes" : dictData["saved_crashes"],
+                "Hangs" : dictData["saved_hangs"]}
+  
   def evaluateCodeReview(self):
     cc = CallCollector()
     ic = ImportCollector()
