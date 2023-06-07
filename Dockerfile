@@ -57,6 +57,7 @@ ADD initScript.bash /home/advml/mlighter/initScript.bash
 WORKDIR /home/advml/mlighter
 EXPOSE 8888
 ENV MLIGHTER_HOME=/home/advml/mlighter
+ENV MLIGHTER_FOLDER=/home/advml/outputs
 ENV AFL_SKIP_CPUFREQ=1
 ENV AFL_I_DONT_CARE_ABOUT_MISSING_CRASHES=1
 RUN chmod 755 /home/advml/mlighter/initScript.bash

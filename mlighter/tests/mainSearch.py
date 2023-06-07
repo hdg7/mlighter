@@ -23,11 +23,12 @@ from sklearn import datasets
 
 
 try:
-    home = os.environ["MLIGHTER_HOME"]
+    homeTool = os.environ["MLIGHTER_HOME"]
+    homeLib = homeTool + "/backend"
 except KeyError:
     home = os.environ["HOME"]
     homeTool = home + "/mlighter/mlighter"
-homeLib = homeTool + "/backend"
+    homeLib = homeTool + "/backend"
 sys.path.append(homeLib)
 
 from MLighter import MLighter

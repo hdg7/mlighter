@@ -106,8 +106,10 @@ class MLighter:
 
   def setCurrentFolder(self,folderPath=None):
     if (folderPath is None):
-      self.currentFolder = os.popen('pwd').read()
-      self.currentFolder=self.currentFolder.rstrip()
+      self.currentFolder = os.getenv('MLIGHTER_FOLDER')    
+      if(self.currentFolder is None):
+        self.currentFolder = os.popen('pwd').read()
+        self.currentFolder=self.currentFolder.rstrip()
     else:
       self.currentFolder=folderPath
       
