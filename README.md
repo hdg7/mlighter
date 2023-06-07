@@ -70,7 +70,8 @@ docker run --cpus="1.0" --network host -it mlighter:latest
 However, if you need to take outputs form the testing code section, you can use a local folder with 
 
 ```
-docker run --cpus="1.0" --network host -v ~/outputs_test:/home/advml/outputs -it mlighter:latest
+docker run --cpus="1.0" --network host -v ~/outputs_test:/home/advml/outputs \
+  -it mlighter:latest
 ```
 
 Feel free to replace the CPUs by the number of CPUs you want to use.
