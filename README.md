@@ -55,6 +55,12 @@ The User Interface is based on Vue and Voila. It is performed in top of a dashbo
 
 Please check the docker file if you want to see the specific libraries that you need to install. We have tested the system in 8064 architectures, but we are aware that Arm64 architectures are not compatible with the libraries of the Docker file.
 
+In order to run the code testing, you will need to install mlighter-utils, which can be done with:
+```bash
+./mlighter/utils/install.sh
+```
+
+
 ## Running Docker
 
 If you want to create and run the docker file, you should use:
