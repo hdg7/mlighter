@@ -39,6 +39,7 @@ class MLighter:
     self.inputsFolder = None
     self.outputsFolder = None
     self.proc = None
+    self.testName = str(datetime.datetime.timestamp(datetime.datetime.now()))
     if("name" in parameters):
       self.name = parameters["name"]
     else:
@@ -112,6 +113,15 @@ class MLighter:
         self.currentFolder=self.currentFolder.rstrip()
     else:
       self.currentFolder=folderPath
+
+
+  def setTestName(self, testName=None):
+    if (not testName is None):
+      self.testName = testName + "_" + str(datetime.datetime.timestamp(datetime.datetime.now()))
+    else:
+        self.testName = str(datetime.datetime.timestamp(datetime.datetime.now()))
+
+    return self.testName
       
   def uploadCodeTemplate(self, language="python",fileName=None,codeContent=None):
     if(self.currentFolder is None):
@@ -123,7 +133,7 @@ class MLighter:
       self.codeTemplate = fileName
       self.setCurrentFolder(os.path.dirname(fileName))
     elif (not codeContent is None):
-      self.codeTemplate = self.currentFolder + "template_" + str(datetime.datetime.timestamp(datetime.datetime.now())) + ".txt"
+      self.codeTemplate = self.currentFolder + "template_" + self.testName + ".txt"
       f = open(self.codeTemplate, "w")
       f.write(codeContent)
       f.close()
@@ -134,7 +144,7 @@ class MLighter:
     if(self.currentFolder is None):
       self.setCurrentFolder()
     if(self.inputsFolder is None):
-      self.testExperimentName="exp_" + str(datetime.datetime.timestamp(datetime.datetime.now()))
+      self.testExperimentName="exp_" + self.testName
       self.inputsFolder=self.currentFolder + "/inputs_" + self.testExperimentName
       self.outputsFolder=self.currentFolder + "/outputs_" + self.testExperimentName
       os.system("mkdir " + self.inputsFolder)
@@ -143,7 +153,7 @@ class MLighter:
       print(fileName)
       self.caseInput = os.system("cp " + fileName + " " + self.inputsFolder)
     elif (not codeContent is None):
-      self.caseInput = "input_" + str(datetime.datetime.timestamp(datetime.datetime.now()))  + ".txt"
+      self.caseInput = "input_" + self.testName + ".txt"
       f = open(self.inputsFolder + "/" + self.caseInput, "wb")
       f.write(codeContent)
       f.close()
