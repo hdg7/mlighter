@@ -53,6 +53,7 @@ RUN pip3 install numpy jupyter pandas joblib scikit-image scikit-learn python-af
 RUN pip3 install ipywidgets
 
 WORKDIR /home/advml/
+RUN mkdir /home/advml/outputs
 COPY mlighter /home/advml/mlighter
 
 #Installing the python mlighter-utils
