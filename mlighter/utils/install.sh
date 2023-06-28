@@ -1,6 +1,7 @@
 cd "$(dirname "$0")"
 
 # build the package
+pip3 install --upgrade build
 python3 -m build
 
 # install the latest version from the dist folder
