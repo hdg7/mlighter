@@ -57,7 +57,7 @@ RUN mkdir /home/advml/outputs
 COPY mlighter /home/advml/mlighter
 
 #Installing the python mlighter-utils
-RUN ./mlighter/utils/install.sh
+#RUN ./mlighter/utils/install.sh
 
 ADD initScript.bash /home/advml/mlighter/initScript.bash 
 WORKDIR /home/advml/mlighter

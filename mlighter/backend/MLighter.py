@@ -92,7 +92,7 @@ class MLighter:
     
   def uploadCodeReview(self, language="python",fileName=None,codeContent=None):
     codeReviewData = None
-    if (not language == "python"):
+    if (not (language == "python" or language=="R")):
       print("language not supported")
       return
     if (not fileName is None):
@@ -134,14 +134,19 @@ class MLighter:
   def uploadCodeTemplate(self, language="python",fileName=None,codeContent=None):
     if(self.currentFolder is None):
       self.setCurrentFolder()
-    if (not language == "python"):
+    if (not (language == "python" or language=="R")):
       print("language not supported")
       return
     if (not fileName is None):
       self.codeTemplate = fileName
       self.setCurrentFolder(os.path.dirname(fileName))
     elif (not codeContent is None):
-      self.codeTemplate = self.currentFolder + "template_" + self.testName + ".txt"
+      if(language == "python"):
+        self.codeTemplate = self.currentFolder + "template_" + self.testName + ".py"
+      elif(language == "R"):
+        self.codeTemplate = self.currentFolder + "template_" + self.testName + ".R"
+      else:
+        self.codeTemplate = self.currentFolder + "template_" + self.testName + ".txt"
       f = open(self.codeTemplate, "w")
       f.write(codeContent)
       f.close()
@@ -169,11 +174,17 @@ class MLighter:
       print("You need to provide the input")
 
 
-  def runCodeTesting(self):
+  def runCodeTesting(self, language="Python"):
     if(self.proc is None):
       #print("Preparing running process")
       screen_name = "mlTest_" + self.testName
-      self.proc = subprocess.Popen('screen -d -m -S ' + screen_name + ' py-afl-fuzz -m 4000 -t10000 -i ' + self.inputsFolder + ' -o ' + self.outputsFolder + ' -- python3 ' + self.codeTemplate + ' @@', shell=True, stdout=subprocess.PIPE, stdin=subprocess.PIPE)
+      if(self.codeTemplate.lower().endswith(".py")):
+        self.proc = subprocess.Popen('screen -d -m -S ' + screen_name + ' py-afl-fuzz -m 4000 -t10000 -i ' + self.inputsFolder + ' -o ' + self.outputsFolder + ' -- python3 ' + self.codeTemplate + ' @@', shell=True, stdout=subprocess.PIPE, stdin=subprocess.PIPE)
+      elif (self.codeTemplate.lower().endswith(".r")):
+        self.proc = subprocess.Popen('screen -d -m -S ' + screen_name + ' afl-fuzz -t10000 -i ' + self.inputsFolder + ' -o ' + self.outputsFolder + ' -- Rscript ' + self.codeTemplate + ' @@', shell=True, stdout=subprocess.PIPE, stdin=subprocess.PIPE)
+      else:
+        print("Language unknown, please check the file extension")
+        return
       self.lastUpdate = multiprocessing.Value('i', 0)
       #print('screen -d -m -S mlTest py-afl-fuzz -m 4000 -t10000 -i ' + self.inputsFolder + ' -o ' + self.outputsFolder + ' -- python3 ' + self.codeTemplate + ' @@')
       #print("Process running")
