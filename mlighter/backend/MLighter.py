@@ -39,6 +39,7 @@ class MLighter:
     self.inputsFolder = None
     self.outputsFolder = None
     self.proc = None
+    self.testName = str(datetime.datetime.timestamp(datetime.datetime.now()))
     if("name" in parameters):
       self.name = parameters["name"]
     else:
@@ -112,7 +113,24 @@ class MLighter:
         self.currentFolder=self.currentFolder.rstrip()
     else:
       self.currentFolder=folderPath
-      
+
+
+  def setTestName(self, testName=None):
+    if (not testName is None):
+      self.testName = testName + "_" + str(datetime.datetime.timestamp(datetime.datetime.now()))
+    else:
+        self.testName = str(datetime.datetime.timestamp(datetime.datetime.now()))
+
+    return self.testName
+
+
+  def resetSession(self):
+    self.currentFolder = None
+    self.inputsFolder = None
+    self.outputsFolder = None
+    self.proc = None
+    self.testName = str(datetime.datetime.timestamp(datetime.datetime.now()))
+
   def uploadCodeTemplate(self, language="python",fileName=None,codeContent=None):
     if(self.currentFolder is None):
       self.setCurrentFolder()
@@ -123,7 +141,7 @@ class MLighter:
       self.codeTemplate = fileName
       self.setCurrentFolder(os.path.dirname(fileName))
     elif (not codeContent is None):
-      self.codeTemplate = self.currentFolder + "template_" + str(datetime.datetime.timestamp(datetime.datetime.now())) + ".txt"
+      self.codeTemplate = self.currentFolder + "template_" + self.testName + ".txt"
       f = open(self.codeTemplate, "w")
       f.write(codeContent)
       f.close()
@@ -134,7 +152,7 @@ class MLighter:
     if(self.currentFolder is None):
       self.setCurrentFolder()
     if(self.inputsFolder is None):
-      self.testExperimentName="exp_" + str(datetime.datetime.timestamp(datetime.datetime.now()))
+      self.testExperimentName="exp_" + self.testName
       self.inputsFolder=self.currentFolder + "/inputs_" + self.testExperimentName
       self.outputsFolder=self.currentFolder + "/outputs_" + self.testExperimentName
       os.system("mkdir " + self.inputsFolder)
@@ -143,7 +161,7 @@ class MLighter:
       print(fileName)
       self.caseInput = os.system("cp " + fileName + " " + self.inputsFolder)
     elif (not codeContent is None):
-      self.caseInput = "input_" + str(datetime.datetime.timestamp(datetime.datetime.now()))  + ".txt"
+      self.caseInput = "input_" + self.testName + ".txt"
       f = open(self.inputsFolder + "/" + self.caseInput, "wb")
       f.write(codeContent)
       f.close()
@@ -154,7 +172,8 @@ class MLighter:
   def runCodeTesting(self):
     if(self.proc is None):
       #print("Preparing running process")
-      self.proc = subprocess.Popen('screen -d -m -S mlTest py-afl-fuzz -m 4000 -t10000 -i ' + self.inputsFolder + ' -o ' + self.outputsFolder + ' -- python3 ' + self.codeTemplate + ' @@', shell=True, stdout=subprocess.PIPE, stdin=subprocess.PIPE)
+      screen_name = "mlTest_" + self.testName
+      self.proc = subprocess.Popen('screen -d -m -S ' + screen_name + ' py-afl-fuzz -m 4000 -t10000 -i ' + self.inputsFolder + ' -o ' + self.outputsFolder + ' -- python3 ' + self.codeTemplate + ' @@', shell=True, stdout=subprocess.PIPE, stdin=subprocess.PIPE)
       self.lastUpdate = multiprocessing.Value('i', 0)
       #print('screen -d -m -S mlTest py-afl-fuzz -m 4000 -t10000 -i ' + self.inputsFolder + ' -o ' + self.outputsFolder + ' -- python3 ' + self.codeTemplate + ' @@')
       #print("Process running")
@@ -163,7 +182,49 @@ class MLighter:
     else:
       print("There is a process running")
 
-      
+
+  def getRunningTests(self):
+    """Gets the names of the running screen sessions prepended with mlTest_"""
+    screenSessions = os.popen('screen -ls | grep mlTest').read().split('\n')
+    screenSessions = [x.split('\t')[1] for x in screenSessions if len(x) > 0]
+    # strip the "mlTest_" from the screen session names but also anything preceeding it
+    screenSessions = [x.split("mlTest_")[1] for x in screenSessions if len(x) > 0]
+
+    return screenSessions
+
+
+  def getAllTests(self, displayRunning=False):
+    """reads what output folders are available from within the currentdir"""
+    if (self.currentFolder is None):
+      self.setCurrentFolder()
+
+    testList = os.listdir(self.currentFolder)
+    testList = [x for x in testList if x.startswith("outputs_")]
+    testList = [x.replace("outputs_exp_", "") for x in testList]
+
+    print("All tests: " + str(testList))
+
+    if (displayRunning):
+      runningTests = self.getRunningTests()
+
+      testList = list(map(lambda x: (x, x in runningTests), testList))
+
+    return testList
+
+
+  def reconnectToSession(self, sessionName):
+    self.lastUpdate = multiprocessing.Value('i', 0)
+    if (self.currentFolder is None):
+      self.setCurrentFolder()
+
+    self.testName = sessionName
+
+    self.testExperimentName = "exp_" + sessionName
+
+    self.inputsFolder=self.currentFolder + "/inputs_" + self.testExperimentName
+    self.outputsFolder=self.currentFolder + "/outputs_" + self.testExperimentName
+
+
   def retrieveTestingState(self,AFLOri=None):
     if AFLOri is None:
       f = open(self.outputsFolder + "/default/fuzzer_stats", "r")
