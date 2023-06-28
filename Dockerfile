@@ -25,21 +25,21 @@ RUN make install
 #Install the R-project
 USER advml
 WORKDIR /home/advml/
-RUN wget https://cloud.r-project.org/src/base/R-4/R-4.0.4.tar.gz
-RUN tar xvzf R-4.0.4.tar.gz
-WORKDIR /home/advml/R-4.0.4
-#RUN CC=/home/advml/AFL/afl-gcc CXX=/home/advml/AFL/afl-g++ ./configure --with-x=no --enable-static --disable-shared
-#RUN AFL_USE_ASAN=1 make
-#USER root
-#RUN make install
+RUN wget https://cloud.r-project.org/src/base/R-4/R-4.3.1.tar.gz
+RUN tar xvzf R-4.3.1.tar.gz
+WORKDIR /home/advml/R-4.3.1
+RUN CC=/home/advml/AFLplusplus/afl-gcc CXX=/home/advml/AFLplusplus/afl-g++ ./configure --with-x=no --enable-static --disable-shared
+RUN AFL_USE_ASAN=1 make
+USER root
+RUN make install
 
 
 #Install Python
 USER advml
 WORKDIR /home/advml
-RUN curl -O https://www.python.org/ftp/python/3.10.0/Python-3.10.0.tgz
-RUN tar -xvzf Python-3.10.0.tgz
-WORKDIR /home/advml/Python-3.10.0
+RUN curl -O https://www.python.org/ftp/python/3.10.12/Python-3.10.12.tgz
+RUN tar -xvzf Python-3.10.12.tgz
+WORKDIR /home/advml/Python-3.10.12
 RUN CC=/home/advml/AFLplusplus/afl-gcc CXX=/home/advml/AFLplusplus/afl-g++ ./configure --enable-static --disable-shared
 RUN make
 USER root
