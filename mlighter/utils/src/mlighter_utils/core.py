@@ -5,11 +5,28 @@ from typing import List
 import numpy as np
 
 
+class AFLDriverException(Exception):
+    """
+    Custom exception class for AFLDriver.
+    """
+
+    def __init__(self, message: str):
+        super().__init__(message)
+
+
 def load_args_or_default(default_args: List[str]) -> List[str]:
     """Loads args from sys.argv or uses default_args"""
     args = sys.argv
     if len(args) < 2:
         args.append(default_args[0])
+    return args
+
+
+def load_args() -> List[str]:
+    """Loads args from sys.argv, if theres none, throw"""
+    args = sys.argv
+    if len(args) < 2:
+        raise AFLDriverException("No arguments were passed")
     return args
 
 
