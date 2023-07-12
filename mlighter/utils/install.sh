@@ -9,4 +9,4 @@ dist_files=$(ls dist)
 sorted_builds=$(echo "$dist_files" | sort -V -r)
 latest_build=$(echo "$sorted_builds" | head -n 1)
 
-pip3 install dist/"$latest_build"
+pip3 install dist/"$latest_build" --force-reinstall
