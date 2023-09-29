@@ -80,9 +80,9 @@ class MLighter:
 
   
   def chooseTransformation(self,transformationName):
-    if(transformationName == "discreet"):
+    if(transformationName == "discrete"):
       self.transformation = MLEvasionDiscreetNoise(self.strategyName)
-    elif(transformationName == "continous"):
+    elif(transformationName == "continuous"):
       self.transformation = MLEvasionContinousNoise(self.strategyName)
     elif(transformationName == "genAlg"):
       self.transformation = MLEvasionSearch(self.strategyName)
