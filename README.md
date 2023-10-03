@@ -23,7 +23,7 @@ https://vimeo.com/678127987?embedded=true&source=vimeo_logo&owner=4798738
 
 If you use MLighter, please cite the paper:
 
-*Menendez, Hector D. (2022). Measuring Machine Learning Robustness in front of Static and Dynamic Adversaries. In Measuring Machine Learning Robustness in front of Static and Dynamic Adversaries. IEEE 34rd International Conference on Tools with Artificial Intelligence (ICTAI).*
+*Menendez, Hector D. (2022). Measuring Machine Learning Robustness in front of Static and Dynamic Adversaries. In Measuring Machine Learning Robustness in front of Static and Dynamic Adversaries. IEEE 34th International Conference on Tools with Artificial Intelligence (ICTAI).*
 
 ```
 @incollection{menendez2022measuring,
