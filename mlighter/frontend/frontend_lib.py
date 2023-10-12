@@ -9,8 +9,8 @@ def initialise_session():
     home_value = os.getenv('MLIGHTER_HOME')
 
     if home_value is None:
-        home_value = os.path.join("/share/Work/Repos",
-            #os.getenv('HOME'),
+        home_value = os.path.join(
+            os.getenv('HOME'),
             "mlighter", "mlighter"
         )
 
