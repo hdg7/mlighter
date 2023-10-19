@@ -1,7 +1,7 @@
 FROM debian:11
 
 RUN apt-get -y update
-RUN apt-get install -yq --fix-missing build-essential emacs-nox vim-tiny git inkscape jed libsm6 libxext-dev libxrender1 lmodern netcat python-dev tzdata unzip nano emacs ca-certificates wget gcc-10 gcc-10-plugin-dev curl screen  nginx clang llvm lld
+RUN apt-get install -yq --fix-missing build-essential emacs-nox vim-tiny git inkscape jed libsm6 libxext-dev libxrender1 lmodern netcat python-dev tzdata unzip nano emacs ca-certificates wget gcc-10 gcc-10-plugin-dev curl screen  nginx clang llvm lld gdb
 
 #Extras for R
 RUN apt-get install -yq gfortran libreadline-dev zlib1g-dev librust-bzip2-dev liblzma-dev libpcre2-dev libcurl4-openssl-dev
@@ -28,7 +28,7 @@ WORKDIR /home/advml/
 RUN wget https://cloud.r-project.org/src/base/R-4/R-4.3.1.tar.gz
 RUN tar xvzf R-4.3.1.tar.gz
 WORKDIR /home/advml/R-4.3.1
-RUN CC=/home/advml/AFLplusplus/afl-gcc CXX=/home/advml/AFLplusplus/afl-g++ ./configure --with-x=no --enable-static --disable-shared
+RUN CC=/home/advml/AFLplusplus/afl-gcc CXX=/home/advml/AFLplusplus/afl-g++ CFLAGS="-g -O0" ./configure --with-x=no --enable-static --disable-shared
 RUN AFL_USE_ASAN=1 make
 USER root
 RUN make install
@@ -44,6 +44,21 @@ RUN CC=/home/advml/AFLplusplus/afl-gcc CXX=/home/advml/AFLplusplus/afl-g++ ./con
 RUN make
 USER root
 RUN make install
+
+
+#Install Crashwalk
+
+WORKDIR /home/advml
+RUN wget https://go.dev/dl/go1.21.3.linux-amd64.tar.gz
+USER root
+RUN tar -C /usr/local -xzf go1.21.3.linux-amd64.tar.gz
+ENV PATH=$PATH:/usr/local/go/bin
+RUN git clone https://github.com/jfoote/exploitable.git
+USER advml
+WORKDIR /home/advml/exploitable/
+RUN python3 setup.py install
+ENV CW_EXPLOITABLE=/home/ubuntu/dataExtra/anaconda3/lib/python3.11/site-packages/exploitable-1.32-py3.11.egg/exploitable/
+RUN go install github.com/bnagy/crashwalk/cmd/...@latest
 
 
 #Installing the jupyter interface
