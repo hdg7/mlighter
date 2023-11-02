@@ -54,9 +54,10 @@ USER root
 RUN tar -C /usr/local -xzf go1.21.3.linux-amd64.tar.gz
 ENV PATH=$PATH:/usr/local/go/bin
 RUN git clone https://github.com/jfoote/exploitable.git
-USER advml
+USER root
 WORKDIR /home/advml/exploitable/
 RUN python3 setup.py install
+USER advml
 ENV CW_EXPLOITABLE=/home/ubuntu/dataExtra/anaconda3/lib/python3.11/site-packages/exploitable-1.32-py3.11.egg/exploitable/
 RUN go install github.com/bnagy/crashwalk/cmd/...@latest
 
