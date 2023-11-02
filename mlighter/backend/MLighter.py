@@ -40,6 +40,7 @@ class MLighter:
     self.outputsFolder = None
     self.proc = None
     self.testName = str(datetime.datetime.timestamp(datetime.datetime.now()))
+    self.test_folder = self.testName
     if("name" in parameters):
       self.name = parameters["name"]
     else:
@@ -121,6 +122,8 @@ class MLighter:
     else:
         self.testName = str(datetime.datetime.timestamp(datetime.datetime.now()))
 
+    self.test_folder = self.testName
+
     return self.testName
 
 
@@ -130,6 +133,33 @@ class MLighter:
     self.outputsFolder = None
     self.proc = None
     self.testName = str(datetime.datetime.timestamp(datetime.datetime.now()))
+    self.test_folder = self.testName
+
+  def upload_aux_files(self, aux_files):
+    """
+    Uploads auxiliary files to the current folder
+    :param aux_files: list of dictionaries with the following structure
+    {
+        "name": "name of the file",
+        "content": "content of the file"
+    }
+    """
+    if (self.currentFolder is None):
+      self.setCurrentFolder()
+
+    if not os.path.exists(os.path.join(self.currentFolder, self.test_folder)):
+      os.makedirs(os.path.join(self.currentFolder, self.test_folder))
+
+    print("Before Loop")
+    print(len(aux_files))
+    for aux_file in aux_files:
+      print("Loop " + aux_file["name"])
+      aux_path = os.path.join(self.currentFolder, self.test_folder, aux_file["name"])
+
+      f = open(aux_path, "w")
+      print("Writing file content " + aux_file["content"][0:10] + "...")
+      f.write(aux_file["content"])
+      f.close()
 
   def uploadCodeTemplate(self, language="python",fileName=None,codeContent=None):
     if(self.currentFolder is None):
@@ -141,12 +171,14 @@ class MLighter:
       self.codeTemplate = fileName
       self.setCurrentFolder(os.path.dirname(fileName))
     elif (not codeContent is None):
+      if not os.path.exists(os.path.join(self.currentFolder, self.test_folder)):
+        os.makedirs(os.path.join(self.currentFolder, self.test_folder))
       if(language == "python"):
-        self.codeTemplate = self.currentFolder + "template_" + self.testName + ".py"
+        self.codeTemplate = os.path.join(self.currentFolder, self.test_folder, "template_" + self.testName + ".py")
       elif(language == "R"):
-        self.codeTemplate = self.currentFolder + "template_" + self.testName + ".R"
+        self.codeTemplate = os.path.join(self.currentFolder, self.test_folder, "template_" + self.testName + ".R")
       else:
-        self.codeTemplate = self.currentFolder + "template_" + self.testName + ".txt"
+        self.codeTemplate = os.path.join(self.currentFolder, self.test_folder, "template_" + self.testName + ".txt")
       f = open(self.codeTemplate, "w")
       f.write(codeContent)
       f.close()
@@ -212,8 +244,6 @@ class MLighter:
     testList = os.listdir(self.currentFolder)
     testList = [x for x in testList if x.startswith("outputs_")]
     testList = [x.replace("outputs_exp_", "") for x in testList]
-
-    print("All tests: " + str(testList))
 
     if (displayRunning):
       runningTests = self.getRunningTests()
