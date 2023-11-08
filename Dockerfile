@@ -58,7 +58,7 @@ USER root
 WORKDIR /home/advml/exploitable/
 RUN python3 setup.py install
 USER advml
-ENV CW_EXPLOITABLE=/home/ubuntu/dataExtra/anaconda3/lib/python3.11/site-packages/exploitable-1.32-py3.11.egg/exploitable/
+ENV CW_EXPLOITABLE=/home/advml/exploitable/exploitable/exploitable.py
 RUN go install github.com/bnagy/crashwalk/cmd/...@latest
 
 
