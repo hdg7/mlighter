@@ -58,6 +58,7 @@ def add_class_test(cls_instance):
 
 def mark_test(*args, **kwargs):
     """Decorator to mark a function as a test"""
+
     def _mark_test(func, test_tag=None, test_name=None):
         if test_tag is not None:
             func.test_tag = test_tag
@@ -194,35 +195,120 @@ def help_dialog(page, children):
     Provide as input the name of the page, and the content to be rendered in the box.
     """
     return v.Dialog(v_slots=[{
-                        'name': 'activator',
-                        'variable': 'x',
-                        'children': v.Btn(
-                            v_on='x.on',
-                            color='success',
-                            dark=True,
-                            children=[
-                                v.Icon(left=True, children=['mdi-help-circle']),
-                                'Help'
-                            ]),
-                    }],
-                    children=[
-                        v.Card(children=[
-                            v.CardTitle(children=[f'{page} help']),
-                            v.CardText(children=[
-                                children,
-                                vspace(),
-                            ]),
-                        ]),
-                    ])
+        'name': 'activator',
+        'variable': 'x',
+        'children': v.Btn(
+            v_on='x.on',
+            color='success',
+            dark=True,
+            children=[
+                v.Icon(left=True, children=['mdi-help-circle']),
+                'Help'
+            ]),
+    }],
+        children=[
+            v.Card(children=[
+                v.CardTitle(children=[f'{page} help']),
+                v.CardText(children=[
+                    children,
+                    vspace(),
+                ]),
+            ]),
+        ])
 
 
 def warning_dialog(children):
     return v.Dialog(width='500',
-                 children=[
-                     v.Card(children=[
-                         v.CardTitle(children=["Warning"]),
-                         v.CardText(children=[
-                             children
-                         ])
-                     ])
-                 ])
+                    children=[
+                        v.Card(children=[
+                            v.CardTitle(children=["Warning"]),
+                            v.CardText(children=[
+                                children
+                            ])
+                        ])
+                    ])
+
+
+def inspect_mis_classification(session, entry_index, predicted, original):
+    # TODO: Accuracy of that sample, and improve ui
+    features = session.data.getVariants()[entry_index]
+    transformation_type = session.data.transformation.get_name()
+    transformation_config = session.data.transformation.get_config()
+    variant_class = predicted
+    columns = session.data.getColumns().values.tolist()
+
+    try:
+        original_data = session.data.transformation.get_variant_original(entry_index)
+    except NotImplementedError:
+        original_data = None
+
+    original_class = original
+
+    if original_data is not None:
+        features_card = v.Card(class_="my-8 mx-8", children=[
+            v.CardTitle(children=["Features"]),
+            v.CardText(children=[
+                v.Html(tag="table", children=[
+                    v.Html(tag="tr", children=[
+                        v.Html(tag="th", children=["feature"]),
+                        v.Html(tag="th", children=["original"]),
+                        v.Html(tag="th", children=["variant"]),
+                    ]),
+                    *[v.Html(tag="tr", children=[
+                        v.Html(tag="td", children=[columns[i]]),
+                        v.Html(tag="td", children=[paragraph(f"{session.data.data.iloc[original_data][columns[i]]}")]),
+                        v.Html(tag="td", children=[paragraph(f"{features.tolist()[0][i]}")]),
+                    ]) for i in range(len(columns))]
+                ])
+            ])
+        ])
+    else:
+        features_card = v.Card(class_="my-8 mx-8", children=[
+            v.CardTitle(children=["Features"]),
+            v.CardText(children=[
+                v.Html(tag="table", children=[
+                    v.Html(tag="tr", children=[
+                        v.Html(tag="th", children=["feature"]),
+                        v.Html(tag="th", children=["original"]),
+                        v.Html(tag="th", children=["variant"]),
+                    ]),
+                    *[v.Html(tag="tr", children=[
+                        v.Html(tag="td", children=[columns[i]]),
+                        v.Html(tag="td", children=[paragraph(f"{features.tolist()[0][i]}")]),
+                    ]) for i in range(len(columns))]
+                ])
+            ])
+        ])
+
+    if transformation_config['features'] is not None:
+        transformation_config['features'] = [columns[i] for i in range(len(transformation_config['features'])) if transformation_config['features'][i] == 1],
+
+    transformation_card = v.Card(class_="my-8 mx-8", children=[
+        v.CardTitle(children=["Transformation"]),
+        v.CardText(children=[
+            v.Html(tag="table", children=[
+                v.Html(tag="tr", children=[
+                    v.Html(tag="th", children=["Type"]),
+                    v.Html(tag="th", children=["Config"]),
+                ]),
+                *[v.Html(tag="tr", children=[
+                    v.Html(tag="td", children=[paragraph(f"{k}")]),
+                    v.Html(tag="td", children=[paragraph(f"{val if not type(val) == list else ' '.join(str(x) for x in val)}")]),
+                ]) for k, val in transformation_config.items()]
+            ])
+        ])
+    ])
+
+    return v.Flex(xs12=True, sm6=True, md4=True, lg3=True, xl2=True, children=[
+        heading(f"Transformation: {transformation_type}", 2),
+        transformation_card,
+        v.Card(class_="my-2 mx-2", children=[
+            v.CardTitle(children=["Prediction"]),
+            v.CardText(children=[
+                paragraph(f"Original class: {original_class}"),
+                paragraph(f"Variant class: {variant_class}"),
+                paragraph(f"Accuracy: Unimplemented"),
+            ])
+        ]),
+        features_card
+    ])

@@ -34,21 +34,33 @@ class MLEvasionContinousNoise(MLEvasion):
         self.shift=config["shift"]
         
     def genVariants(self,data):
+        # Creates an array where the ith element contains the index of the original input
+        self.origin_map = np.tile(np.arange(len(data)), self.numberVariants)
         variableInput = data
         inputVal=np.asmatrix(variableInput)
-#        print("Inputs before block")
-#        print(inputVal)
+
         total=[]
-        for i in range(self.numberVariants): total.append([inputVal])
+        for i in range(self.numberVariants):
+            total.append([inputVal])
+
         inputVal = np.block(total)
-#        print("Inputs after block")
-#        print(inputVal)
+
         transformations = (self.noise)*np.random.random(size=(len(inputVal),len(self.featureSelection)))+self.shift
-#        print(transformations)
-#        print("size")
-#        print(self.numberVariants*len(inputVal),len(self.featureSelection))
-#        print(np.asarray(self.featureSelection))
+
         transformations = transformations * np.asarray(self.featureSelection)
         variants = inputVal + transformations
         return variants
 
+    def get_config(self):
+        return {
+            "number_variants": self.numberVariants,
+            "noise": self.noise,
+            "features": self.featureSelection,
+            "shift": self.shift
+        }
+
+    def get_name(self):
+        return "Continous Noise"
+
+    def get_variant_original(self, index):
+        return self.origin_map[index]

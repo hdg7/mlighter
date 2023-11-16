@@ -32,3 +32,12 @@ class MLEvasion:
     #Number of variants per input
     def setNumberVariants(self,numberVariants):
         self.numberVariants=numberVariants
+
+    def get_config(self):
+        raise NotImplementedError("Please Implement this method")
+
+    def get_name(self):
+        raise NotImplementedError("Please Implement this method")
+
+    def get_variant_original(self, index):
+        raise NotImplementedError("Please Implement this method")

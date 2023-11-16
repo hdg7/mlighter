@@ -24,6 +24,7 @@ class MLDataset:
 
     #Transformation is an MLEvasion type
     def transform(self, transformation, oriVariant=None):
+        self.transformation = transformation
         if(oriVariant is None):
             self.variants = transformation.genVariants(self.data)
         else:

@@ -99,32 +99,40 @@ class MLEvasionSearch(MLEvasion):
 
     #The populations are the variants, but we keep the best solution.
     #Data initializes the fitness.
-    def genVariants(self,data):
-        self.data=data
-        gen= GAOptimizer(self.fitness,self.config)
-        self.sol,self.pop,self.logbook=gen.optimize()
-        bestIndividual=np.zeros(len(self.data[self.oriVariant]))
-#        print(self.features)
-#        print(self.sol[0])
-        bestIndividual[self.features==1]+=self.sol[0]
-        bestIndividual+=self.data[self.oriVariant]
-#        print(compIndividual)
-        variants=[]
-        print(self.pop)
+    def genVariants(self, data):
+        self.data = data
+        gen = GAOptimizer(self.fitness, self.config)
+        self.sol, self.pop, self.logbook = gen.optimize()
+
+        bestIndividual = np.zeros(len(self.data[self.oriVariant]))
+
+        bestIndividual[self.features == 1] += self.sol[0]
+        bestIndividual += self.data[self.oriVariant]
+
+        variants = []
+
         for elem in self.pop:
-            compIndividual=np.zeros(len(self.data[self.oriVariant]))
-#            print(elem)
-            compIndividual[self.features==1]+=elem
-#            compIndividual+=self.data.iloc[self.oriVariant]
-#            print(compIndividual)
+            compIndividual = np.zeros(len(self.data[self.oriVariant]))
+
+            compIndividual[self.features == 1] += elem
+
             variants.append(compIndividual)
-        print(variants)
-#        print(self.data.iloc[self.oriVariant])
-        variants=[variant+self.data[self.oriVariant] for variant in variants]
-        pred=self.predictor(variants)
-        print(pred)
-        pred=self.predictor([self.data[self.oriVariant]])
-        print(pred)
-        print(variants)
+
+        variants = [variant+self.data[self.oriVariant] for variant in variants]
+        pred = self.predictor(variants)
+
+        pred = self.predictor([self.data[self.oriVariant]])
+
         return variants
 
+
+    def get_config(self):
+        return {
+            "predictor": self.predictor,
+            "features": self.features,
+            "oriVariant": self.oriVariant,
+            **self.config,
+        }
+
+    def get_name(self):
+        return "Evasion Search"
