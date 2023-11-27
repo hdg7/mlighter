@@ -1,7 +1,7 @@
-FROM debian:11
+FROM debian:12
 
 RUN apt-get -y update
-RUN apt-get install -yq --fix-missing build-essential emacs-nox vim-tiny git inkscape jed libsm6 libxext-dev libxrender1 lmodern netcat python-dev tzdata unzip nano emacs ca-certificates wget gcc-10 gcc-10-plugin-dev curl screen  nginx clang llvm lld gdb
+RUN apt-get install -yq --fix-missing build-essential emacs-nox vim-tiny git inkscape jed libsm6 libxext-dev libxrender1 lmodern netcat-openbsd python3-dev tzdata unzip nano emacs ca-certificates wget gcc-12 gcc-12-plugin-dev curl screen  nginx clang llvm lld gdb
 
 #Extras for R
 RUN apt-get install -yq gfortran libreadline-dev zlib1g-dev librust-bzip2-dev liblzma-dev libpcre2-dev libcurl4-openssl-dev
