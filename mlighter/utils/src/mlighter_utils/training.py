@@ -38,3 +38,13 @@ def extract_xy_train(dataset: pd.DataFrame, test_size: int = 0.20, random_state=
     x_train, _, y_train, _ = train_test_split(x, y, test_size=test_size, random_state=random_state)
 
     return x_train, y_train
+
+def extract_xy_train_N_test(dataset: pd.DataFrame, test_size: int = 0.20, random_state=constants.FIXED_RANDOM_VALUE) \
+        -> (pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame):
+    array = dataset.values
+    x = array[:, 0:4]
+    y = array[:, 4]
+
+    x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=test_size, random_state=random_state)
+
+    return x_train, x_test, y_train, y_test
