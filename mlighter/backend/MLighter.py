@@ -150,14 +150,10 @@ class MLighter:
     if not os.path.exists(os.path.join(self.currentFolder, self.test_folder)):
       os.makedirs(os.path.join(self.currentFolder, self.test_folder))
 
-    print("Before Loop")
-    print(len(aux_files))
     for aux_file in aux_files:
-      print("Loop " + aux_file["name"])
       aux_path = os.path.join(self.currentFolder, self.test_folder, aux_file["name"])
 
       f = open(aux_path, "w")
-      print("Writing file content " + aux_file["content"][0:10] + "...")
       f.write(aux_file["content"])
       f.close()
 
