@@ -34,19 +34,19 @@ sys.path.append(homeLib)
 from MLighter import MLighter
 iris = datasets.load_iris()
 session = MLighter()
-session.uploadDataset("structured",datasetName="iris",actualData=iris.data,
+session.upload_dataset("structured",datasetName="iris",actualData=iris.data,
                       targetData=iris.target)
 #print(session.data.getColumns())
-session.uploadModel("sklearn","iris",modelUrl=homeTool + "/tests/example/irisProb.joblib")
+session.upload_model("sklearn","iris",modelUrl=homeTool + "/tests/example/irisProb.joblib")
 #session.data.cleanColumn("Unnamed: 0")
 session.prediction(session.data.data)
-session.chooseStrategy("search")
-session.chooseTransformation("genAlg")
+session.choose_strategy("search")
+session.choose_transformation("genAlg")
 config=session.transformation.ga_config()
 config["numtuples"]=4
 config["noise"]=1
 config["features"]=[1,1,1,1]
-config["predictor"]=session.prediction_proba
+config["predictor"]=session.prediction_probability
 config["oriVariant"]=1
 config["weights"]=(-1.0,1.0,1.0)
 config["numberVariants"]=1
@@ -57,13 +57,13 @@ config["lambda_sel"]=50
 config["mu_sel"]=50
 config["class"]=1
 
-session.setupTransformation(config)
-#print(session.prediction_proba([session.data.data.iloc[config["oriVariant"]]]))
+session.setup_transformation(config)
+#print(session.prediction_probability([session.data.data.iloc[config["oriVariant"]]]))
 #print("\n")
 #print(session.data.data.head(1)+session.data.data.iloc[config["oriVariant"]])
 #print("\n")
 #print(session.data.data.iloc[config["oriVariant"]])
-#print(session.prediction_proba(session.data.data[config["oriVariant"]:config["oriVariant"]+1]))
+#print(session.prediction_probability(session.data.data[config["oriVariant"]:config["oriVariant"]+1]))
 #print(session.data.data[config["oriVariant"]:config["oriVariant"]+1])
 #The number is for the original variant position
 session.data.transform(session.transformation)
@@ -72,4 +72,4 @@ print(variants)
 print(session.prediction(session.data.data))
 print(session.prediction(session.data.data)[config["oriVariant"]])
 print(session.prediction(variants))
-#print(session.prediction_proba(variants))
+#print(session.prediction_probability(variants))

@@ -29,17 +29,22 @@ home += "/backend"
 sys.path.append(home)
 
 from MLighter import MLighter
-parameters = {"name":"iris.csv"}
+parameters = {"name": "iris.csv"}
 session = MLighter(parameters)
-session.uploadDataset("structured","example/iris.csv","target")
+session.upload_dataset("structured", "example/iris.csv", "target")
 print(session.data.getColumns())
-session.uploadModel("sklearn","iris",modelUrl="example/iris.joblib")
+session.upload_model("sklearn", "iris", model_url="example/iris.joblib")
 session.data.cleanColumn("Unnamed: 0")
 session.prediction(session.data.data)
-session.chooseStrategy("noise")
-session.chooseTransformation("discreet")
-config={"numberVariants":2,"shift":0,"noise":1,"features":[0,0,1,1]}
-session.setupTransformation(config)
+session.choose_strategy("noise")
+session.choose_transformation("discreet")
+config={
+    "numberVariants": 2,
+    "shift": 0,
+    "noise": 1,
+    "features": [0,0,1,1]
+}
+session.setup_transformation(config)
 session.data.transform(session.transformation)
 
 variants = session.data.getVariants()
