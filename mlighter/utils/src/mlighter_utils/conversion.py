@@ -1,6 +1,5 @@
 import struct
 import math
-from typing import Callable, Dict, List
 
 import numpy as np
 
@@ -8,17 +7,17 @@ import numpy as np
 # TODO: bool, conditionally choose between functions to apply
 
 
-def select_from(value: int | np.int64, options: list[any]) -> any:
+def select_from(value, options):
     """Selects a value from a list of options"""
     return options[value % len(options)]
 
 
-def to_bool(value: int | np.int64) -> bool:
+def to_bool(value):
     """Converts an int or np.int64 to a bool"""
     return bool(value % 2)
 
 
-def to_float(value: int | np.int64) -> float:
+def to_float(value):
     """Converts an int or np.int64 to a float value, if nan or inf, returns 0.0"""
     packed = struct.pack('>q', value)
     unpacked = struct.unpack('>d', packed)[0]
@@ -29,7 +28,7 @@ def to_float(value: int | np.int64) -> float:
         return unpacked
 
 
-def to_fraction(value: int | np.int64) -> float:
+def to_fraction(value):
     """Converts an int or np.int64 to a float between 0 and 1"""
     # return abs(float(value) / MAX_INT)
     """
@@ -39,12 +38,12 @@ def to_fraction(value: int | np.int64) -> float:
     return math.modf(to_float(value))[0]
 
 
-def to_positive(value: int | np.int64 | float) -> int:
+def to_positive(value):
     """Converts an int, np.int64, or float to a positive int or float"""
     return abs(value)
 
 
-def to_positive_or_none(value: int | np.int64 | float) -> int | None:
+def to_positive_or_none(value):
     """Converts an int, np.int64, or float to a positive int or float"""
     if value <= 0:
         return None
@@ -52,12 +51,12 @@ def to_positive_or_none(value: int | np.int64 | float) -> int | None:
         return value
 
 
-def to_greater_than(value: int | np.int64, min_value: int) -> int:
+def to_greater_than(value, min_value):
     """Converts an int or np.int64 to a positive int greater than min_value"""
     return min_value + abs(value)
 
 
-def to_greater_than_or_none(value: int | np.int64, min_value: int) -> int | None:
+def to_greater_than_or_none(value, min_value):
     """Converts an int or np.int64 to a positive int greater than min_value"""
     if value <= 0:
         return None
@@ -65,7 +64,7 @@ def to_greater_than_or_none(value: int | np.int64, min_value: int) -> int | None
         return min_value + abs(value)
 
 
-def to_positive_integer_or_fraction(value: int | np.int64) -> int | float:
+def to_positive_integer_or_fraction(value):
     """Converts an int or np.int64 to a positive int or fraction"""
     if value <= 0:
         return to_fraction(abs(value))
@@ -78,9 +77,7 @@ class NotReserved:
     pass
 
 
-def to_reserved_or_else(value: int | np.int64, reserved: Dict[int | np.int64, any] | Callable[[int | np.int64], any],
-                        else_function: Callable[[int | np.int64], any],
-                        shift_function: Callable[[int | np.int64], int | np.int64] | None = None) -> any:
+def to_reserved_or_else(value, reserved, else_function, shift_function):
     """
     Takes a value and returns a reserved value or the else_function
 
@@ -109,8 +106,7 @@ def to_reserved_or_else(value: int | np.int64, reserved: Dict[int | np.int64, an
             return else_function(value)
 
 
-def select_function(value: int | np.int64, selection_function: Callable[[int | np.int64], int | bool],
-                    *options: Callable[[int | np.int64], any]) -> any:
+def select_function(value, selection_function, *options):
     """Selects a function to apply to a value based on a selection function which returns an index into the options"""
     selection = selection_function(value)
 

@@ -21,7 +21,7 @@ class LoadDataOptions(enum.Enum):
     WITH_CATEGORICAL = 2
 
 
-def get_default_dataset(options: LoadDataOptions = LoadDataOptions.WITH_CATEGORICAL) -> pd.DataFrame:
+def get_default_dataset(options = LoadDataOptions.WITH_CATEGORICAL):
     if options == LoadDataOptions.WITH_NUMERIC:
         return pd.read_csv(IRIS_DATASET_URL, names=IRIS_FLOWER_NAMES).applymap(lambda x:
                                                                                (x if type(x) != str else categories[x]))
@@ -29,8 +29,7 @@ def get_default_dataset(options: LoadDataOptions = LoadDataOptions.WITH_CATEGORI
         return pd.read_csv(IRIS_DATASET_URL, names=IRIS_FLOWER_NAMES)
 
 
-def extract_xy_train(dataset: pd.DataFrame, test_size: int = 0.20, random_state=constants.FIXED_RANDOM_VALUE) \
-        -> (pd.DataFrame, pd.DataFrame):
+def extract_xy_train(dataset, test_size = 0.20, random_state=constants.FIXED_RANDOM_VALUE):
     array = dataset.values
     x = array[:, 0:4]
     y = array[:, 4]
@@ -39,8 +38,7 @@ def extract_xy_train(dataset: pd.DataFrame, test_size: int = 0.20, random_state=
 
     return x_train, y_train
 
-def extract_xy_train_N_test(dataset: pd.DataFrame, test_size: int = 0.20, random_state=constants.FIXED_RANDOM_VALUE) \
-        -> (pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame):
+def extract_xy_train_N_test(dataset, test_size = 0.20, random_state=constants.FIXED_RANDOM_VALUE):
     array = dataset.values
     x = array[:, 0:4]
     y = array[:, 4]
