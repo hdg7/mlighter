@@ -77,7 +77,7 @@ class NotReserved:
     pass
 
 
-def to_reserved_or_else(value, reserved, else_function, shift_function):
+def to_reserved_or_else(value, reserved, else_function, shift_function=lambda x: x):
     """
     Takes a value and returns a reserved value or the else_function
 
