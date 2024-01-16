@@ -65,7 +65,7 @@ RUN go install github.com/bnagy/crashwalk/cmd/...@latest
 #Installing the jupyter interface
 USER root
 RUN pip3 install --upgrade pip
-RUN pip3 install numpy jupyter pandas joblib scikit-image scikit-learn python-afl voila ipyvuetify jupyter_contrib_nbextensions voila-vuetify bqplot deap
+RUN pip3 install numpy jupyter pandas joblib xgboost scikit-image scikit-learn python-afl voila ipyvuetify jupyter_contrib_nbextensions voila-vuetify bqplot deap
 RUN pip3 install ipywidgets
 
 WORKDIR /home/advml/
