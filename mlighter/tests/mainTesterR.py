@@ -38,7 +38,7 @@ s = sched.scheduler(time.time, time.sleep)
 session = MLighter()
 def do_something(sc,session):
     try:
-        state=session.retrieve_testing_state()
+        state=session.retrieveTestingState()
         if(not state is None):
             print(state)
     except:
@@ -46,9 +46,9 @@ def do_something(sc,session):
     sc.enter(1, 1, do_something, (sc,session))      
 #sys.path.append(os.environ["EURY_HOME"])
 
-session.upload_code_template(language="python",fileName=tests+"/example/sklearnLogRegTest.py")
-session.upload_code_input(fileName=tests+"/example/inputLogReg.bin.npy")
-session.run_code_testing()
+session.uploadCodeTemplate(language="python",fileName=tests+"/example/sklearnLogRegTest.py")
+session.uploadCodeInput(fileName=tests+"/example/inputLogReg.bin.npy")
+session.runCodeTesting()
 s.enter(1, 1, do_something, (s,session,))
 s.run()
 

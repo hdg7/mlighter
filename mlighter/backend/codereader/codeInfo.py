@@ -16,7 +16,6 @@
 #  Documentation for this module.
 #
 #  More details.
-
 import ast
 
 class CallCollector(ast.NodeVisitor):

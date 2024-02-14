@@ -31,7 +31,7 @@ sys.path.append(home)
 from MLighter import MLighter
 parameters = {"name":"iris.csv"}
 session = MLighter(parameters)
-session.upload_code_review("python","example/sklearnLogReg.py")
-listdual=session.evaluate_code_review()
+session.uploadCodeReview("python","example/sklearnLogReg.py")
+listdual=session.evaluateCodeReview()
 import pandas
 print(pandas.DataFrame(listdual))
