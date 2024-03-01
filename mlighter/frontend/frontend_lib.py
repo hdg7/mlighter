@@ -162,7 +162,7 @@ def div(*children, **kwargs):
     return v.Html(tag="div", children=children, **kwargs)
 
 
-def tabs(tab_headers, tab_items, **kwargs):
+def tabs(tab_headers, tab_items, v_model=None, **kwargs):
     tabs_ = [v.Tab(children=[tab]) for tab in tab_headers]
     tab_items_ = [v.TabItem(children=[tab_item]) for tab_item in tab_items]
     return v.Tabs(
@@ -170,7 +170,7 @@ def tabs(tab_headers, tab_items, **kwargs):
             *tabs_,
             *tab_items_,
         ],
-        v_model=None,
+        v_model=v_model,
         **kwargs
     )
 

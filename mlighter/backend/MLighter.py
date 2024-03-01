@@ -16,10 +16,12 @@
 #  Documentation for this module.
 #
 #  More details.
+import pandas as pd
 
 from dataset.mlDataStructure import MLDataStructure
 from dataset.mlDataImage import MLDataImage
 from dataset.mlDataAudio import MLDataAudio
+from model.hugging_face_model import HuggingFaceModel
 from model.mlModelSkLearn import MLModelSkLearn
 from evasions.mlEvasionDiscreetNoise import MLEvasionDiscreetNoise
 from evasions.mlEvasionContinousNoise import MLEvasionContinousNoise
@@ -48,18 +50,29 @@ class MLighter:
 
 
   def uploadDataset(self,dataType,datasetName=None,dataClass=None,dataFile=None,actualData=None, targetData=None):
+    print("Uploading dataset " + dataType)
     if not datasetName is None:
       self.dataName = datasetName
-    if(dataType == "structured"):
+
+    if(dataType == "structured" or dataType == "description"):
       self.data = MLDataStructure(self.dataName)
-    if(dataType == "image"):
+    elif(dataType == "image"):
+      print("Image")
       self.data = MLDataImage(self.dataName)
-    if(dataType == "audio"):
+      print("Image ->")
+    elif(dataType == "audio"):
       self.data = MLDataAudio(self.dataName)
+
+    print("Uploading datafile " + str(dataFile))
+
     if (not dataClass is None) or (not dataFile is None) or (not actualData is None) or (not targetData is None):
+      print("Loading data")
       self.data.loadData(className=dataClass,dataFile=dataFile,actualData=actualData,targetData=targetData)
+    else:
+      print("No data provided")
 
   def uploadModel(self,modelType, modelName,modelUrl=None,modelFile=None,actualModel=None):
+    print("Uploading model " + modelName + " of type " + modelType)
     self.modelName = modelName
     if(modelType == "sklearn"):
       self.model = MLModelSkLearn(self.modelName)
@@ -69,9 +82,14 @@ class MLighter:
         self.model.loadModelIO(modelFile)
       elif (not actualModel is None):
         self.model.model=actualModel
+    elif(modelType == "huggingface"):
+      print("Hugging Face Model")
+      self.model = HuggingFaceModel(self.modelName)
 
   def prediction(self,sample):
-    return self.model.predict(sample)
+    p = self.model.predict(sample)
+    print(p)
+    return p
 
   def prediction_proba(self,sample):
     return self.model.predict_proba(sample)
@@ -309,5 +327,39 @@ class MLighter:
           self.listdual.append(elemdual)
     return self.listdual
 
-  
-  
+  @staticmethod
+  def expected_vs_actual_hf(expected, actual):
+    # expected is a list of lists, were the outer list is the list of expected labels for each entry
+    # actual is a dataframe with the actual labels for each entry with their percentage of confidence
+    # we return a data frame of |label|predicted|confidence| where predicted contains strings
+    # ('expected seen' or 'expected not seen', 'unexpected seen')
+    # so if a labels in expected is in actual, we return 'expected seen' and the confidence
+    # if a label in expected is not in actual, we return 'expected not seen' and 0
+    # if a label in actual is not in expected, we return 'unexpected seen' and the confidence
+    try:
+      print("Expected")
+      print(expected)
+      print("Actual")
+      print(actual)
+      expected_vs_actual = []
+      for i in range(len(expected)):
+        print("Entry")
+        print(i)
+        expected_labels = expected[i]
+        actual_labels = actual[i]['label'].tolist()
+        actual_confidence = actual[i]['prediction'].tolist()
+        for label in expected_labels:
+          print("Label")
+          print(label)
+          if label in actual_labels:
+            expected_vs_actual.append([label, 'expected seen', actual_confidence[actual_labels.index(label)]])
+          else:
+            expected_vs_actual.append([label, 'expected not seen', 0])
+        for j in range(len(actual_labels)):
+          if actual_labels[j] not in expected_labels:
+            expected_vs_actual.append([actual_labels[j], 'unexpected seen', actual_confidence[j]])
+
+      return pd.DataFrame(expected_vs_actual, columns=['label', 'predicted', 'confidence'])
+    except Exception as e:
+        print(e)
+        return pd.DataFrame(columns=['label', 'predicted', 'confidence'])

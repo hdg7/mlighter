@@ -18,9 +18,6 @@
 #  More details.
 
 from .mlDataStructure import MLDataStructure
-import pandas as pd
-import io
-from Exceptions import NotImplementedError
 
 class MLDataDescription(MLDataStructure):
     def transform(self, transformation, oriVariant=None):

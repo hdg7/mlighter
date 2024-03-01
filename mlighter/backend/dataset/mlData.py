@@ -20,6 +20,7 @@
 class MLDataset:
 
     def __init__(self,name):
+        print("Creating Dataset with name: ",name)
         self.name = name
 
     #Transformation is an MLEvasion type
