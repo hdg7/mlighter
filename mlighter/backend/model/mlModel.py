@@ -22,7 +22,7 @@ class MLModel:
     def __init__(self,name):
         self.name = name
         
-    def predict(self,sample):
+    def predict(self,sample, original_text=None):
         return self.model.predict(sample);
 
     def predict_proba(self,sample):

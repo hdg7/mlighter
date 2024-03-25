@@ -14,16 +14,51 @@ class HuggingFaceModel:
     def set_num_labels_consider(self, num_labels_consider):
         self.num_labels_consider = num_labels_consider
 
-    def predict(self, text):
-        if isinstance(text, pd.DataFrame):
-            print(text)
-            predicted_labels = text.apply(lambda x: self._predict_single(x['description']), axis=1)
-        elif isinstance(text, list):
-            predicted_labels = [self._predict_single(t) for t in text]
-        else:
-            predicted_labels = self._predict_single(text)
+    def predict(self, text, original_text=None):
+        if original_text is not None:
+            if isinstance(text, pd.DataFrame):
+                text['original_description'] = original_text
+            else:
+                text = pd.DataFrame({
+                    'description': text,
+                    'original_description': original_text
+                })
 
-        return predicted_labels
+        text.reset_index(drop=True, inplace=True)
+
+        predicted_labels = text.apply(lambda row: self._predict_single(row['description']), axis=1)
+        text['labels'] = predicted_labels
+        if original_text is not None:
+            original_predicted_labels = text.apply(lambda row: self._predict_single(row['original_description']), axis=1)
+            text['original_labels'] = original_predicted_labels
+
+        try:
+            print(text)
+            print("=====================")
+            text['idx'] = text.index
+
+            text = text.explode('labels')
+            norm_labels = pd.json_normalize(text['labels'])
+            print(norm_labels)
+            text = pd.concat([text.reset_index(drop=True), norm_labels], axis=1)
+            text.drop(columns=['labels'], inplace=True)
+
+            if original_text is not None:
+                text = text.explode('original_labels')
+                norm_original_labels = pd.json_normalize(text['original_labels'])
+                text = pd.concat([text.reset_index(drop=True), norm_original_labels], axis=1)
+                text.drop(columns=['original_labels'], inplace=True)
+
+            text.index = text['idx']
+
+            print(text)
+            print("=====================")
+
+            return text
+        except Exception as e:
+            print("Error in predict:", e)
+            return text
+
 
     def _predict_single(self, text):
         inputs = self.tokenizer(text, return_tensors="pt")
@@ -37,10 +72,9 @@ class HuggingFaceModel:
             'prediction': predictions[0][predictions[0] > 0.3].tolist()
         })
 
-        print(predicted_labels)
-
         top_results = predicted_labels.sort_values(by='prediction', ascending=False).head(self.num_labels_consider)
 
-        print(top_results['label'].tolist())
+        # to array of dictionaries
+        top_results = top_results.to_dict(orient='records')
 
         return top_results

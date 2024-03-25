@@ -86,8 +86,8 @@ class MLighter:
       print("Hugging Face Model")
       self.model = HuggingFaceModel(self.modelName)
 
-  def prediction(self,sample):
-    p = self.model.predict(sample)
+  def prediction(self,sample, original_text=None):
+    p = self.model.predict(sample, original_text)
     print(p)
     return p
 
@@ -329,37 +329,54 @@ class MLighter:
 
   @staticmethod
   def expected_vs_actual_hf(expected, actual):
-    # expected is a list of lists, were the outer list is the list of expected labels for each entry
-    # actual is a dataframe with the actual labels for each entry with their percentage of confidence
-    # we return a data frame of |label|predicted|confidence| where predicted contains strings
-    # ('expected seen' or 'expected not seen', 'unexpected seen')
-    # so if a labels in expected is in actual, we return 'expected seen' and the confidence
-    # if a label in expected is not in actual, we return 'expected not seen' and 0
-    # if a label in actual is not in expected, we return 'unexpected seen' and the confidence
+    print(len(actual))
     try:
-      print("Expected")
-      print(expected)
-      print("Actual")
-      print(actual)
-      expected_vs_actual = []
-      for i in range(len(expected)):
-        print("Entry")
-        print(i)
-        expected_labels = expected[i]
-        actual_labels = actual[i]['label'].tolist()
-        actual_confidence = actual[i]['prediction'].tolist()
-        for label in expected_labels:
-          print("Label")
-          print(label)
-          if label in actual_labels:
-            expected_vs_actual.append([label, 'expected seen', actual_confidence[actual_labels.index(label)]])
-          else:
-            expected_vs_actual.append([label, 'expected not seen', 0])
-        for j in range(len(actual_labels)):
-          if actual_labels[j] not in expected_labels:
-            expected_vs_actual.append([actual_labels[j], 'unexpected seen', actual_confidence[j]])
+      # Check if actual contains an original_description and original_labels columns
+      if 'original_description' in actual.columns and 'original_labels' in actual.columns:
+        print("Original columns found")
 
-      return pd.DataFrame(expected_vs_actual, columns=['label', 'predicted', 'confidence'])
+        print(expected)
+        print("--------------------------------------------")
+        print(actual)
+
+        actual['expected_labels'] = expected[actual.index]
+
+        actual['expected'] = actual.apply(lambda row: row['label'] in row['expected_labels'], axis=1)
+
+
+      else:
+        print("Original columns not found")
+        actual['expected_labels'] = expected[actual.index]
+
+        # We now have
+        # | description | label | predicted | expected_labels |
+        # | "something" | 1     | True      |[lab, lab]       |
+        # we need to go through each row checking if the label is in the expected_labels, if so
+        # we set the expected to True, otherwise False
+        # we simultaneously set predicted to true on everything
+
+        actual['expected'] = actual.apply(lambda row: row['label'] in row['expected_labels'], axis=1)
+        actual['predicted'] = True
+
+        actual.drop(columns=['expected_labels'], inplace=True)
+
+        print(expected)
+        expected = expected.apply(ast.literal_eval)
+
+        # now we need to add any missing labels from expected to actual matching on index
+        for idx, labels in expected.items():
+          print(idx, labels)
+          for label in labels:
+            print(idx, label)
+            if label not in actual.loc[actual['idx'] == idx, 'label'].values:
+              actual = pd.concat([actual, pd.DataFrame({'description': actual.loc[actual['idx'] == idx, 'description'].values[0],
+                                                      'label': label,
+                                                      'predicted': False,
+                                                      'expected': True,
+                                                      'prediction': 0.0}, index=[0])])
+
+        return actual
+
     except Exception as e:
         print(e)
-        return pd.DataFrame(columns=['label', 'predicted', 'confidence'])
+        return pd.DataFrame(columns=['description', 'label', 'predicted', 'expected', 'probability'])
