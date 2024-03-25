@@ -15,24 +15,36 @@ class HuggingFaceModel:
         self.num_labels_consider = num_labels_consider
 
     def predict(self, text, original_text=None):
-        if original_text is not None:
-            if isinstance(text, pd.DataFrame):
-                text['original_description'] = original_text
-            else:
-                text = pd.DataFrame({
-                    'description': text,
-                    'original_description': original_text
-                })
-
-        text.reset_index(drop=True, inplace=True)
-
-        predicted_labels = text.apply(lambda row: self._predict_single(row['description']), axis=1)
-        text['labels'] = predicted_labels
-        if original_text is not None:
-            original_predicted_labels = text.apply(lambda row: self._predict_single(row['original_description']), axis=1)
-            text['original_labels'] = original_predicted_labels
-
         try:
+            text = text.copy()
+            original_text = original_text.copy() if original_text is not None else None
+            if original_text is not None:
+                if isinstance(text, pd.DataFrame):
+                    text['original_description'] = original_text
+                else:
+                    text = pd.DataFrame({
+                        'description': text,
+                        'original_description': original_text
+                    })
+
+            text.reset_index(drop=True, inplace=True)
+
+            print("Predicting text")
+
+            predicted_labels = text.apply(lambda row: self._predict_single(row['description']), axis=1)
+            text['labels'] = predicted_labels
+
+            print("Predicted labels")
+            print(text['labels'])
+            if original_text is not None:
+                print("Predicting original text")
+                original_predicted_labels = text.apply(lambda row: self._predict_single(row['original_description']), axis=1)
+                print("Original predicted labels")
+                print(original_predicted_labels)
+                text['original_labels'] = original_predicted_labels
+                print("Original labels")
+                print(text['original_labels'])
+
             print(text)
             print("=====================")
             text['idx'] = text.index
@@ -46,6 +58,7 @@ class HuggingFaceModel:
             if original_text is not None:
                 text = text.explode('original_labels')
                 norm_original_labels = pd.json_normalize(text['original_labels'])
+                norm_original_labels.columns = ['original_' + col for col in norm_original_labels.columns]
                 text = pd.concat([text.reset_index(drop=True), norm_original_labels], axis=1)
                 text.drop(columns=['original_labels'], inplace=True)
 

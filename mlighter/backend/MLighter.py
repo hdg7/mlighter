@@ -25,6 +25,7 @@ from model.hugging_face_model import HuggingFaceModel
 from model.mlModelSkLearn import MLModelSkLearn
 from evasions.mlEvasionDiscreetNoise import MLEvasionDiscreetNoise
 from evasions.mlEvasionContinousNoise import MLEvasionContinousNoise
+from evasions.mlDescriptionTransformation import MLDescriptionTransformation
 from evasions.testGen import MLEvasionSearch
 from codereader.codeInfo import CallCollector
 from codereader.importInfo import ImportCollector
@@ -97,16 +98,17 @@ class MLighter:
   def chooseStrategy(self,strategyName):
     self.strategyName = strategyName
 
-  
-  def chooseTransformation(self,transformationName):
-    if(transformationName == "discrete"):
+  def chooseTransformation(self, transformationName):
+    if (transformationName == "discrete"):
       self.transformation = MLEvasionDiscreetNoise(self.strategyName)
-    elif(transformationName == "continuous"):
+    elif (transformationName == "continuous"):
       self.transformation = MLEvasionContinousNoise(self.strategyName)
-    elif(transformationName == "genAlg"):
+    elif (transformationName == "genAlg"):
       self.transformation = MLEvasionSearch(self.strategyName)
-      
-  def setupTransformation(self,config):
+    elif (transformationName == "descriptions"):
+      self.transformation = MLDescriptionTransformation(self.strategyName)
+
+  def setupTransformation(self, config):
     self.transformation.transformationSetup(config)
     
   def uploadCodeReview(self, language="python",fileName=None,codeContent=None):
@@ -329,10 +331,12 @@ class MLighter:
 
   @staticmethod
   def expected_vs_actual_hf(expected, actual):
+    expected = expected.copy()
+    actual = actual.copy()
     print(len(actual))
     try:
       # Check if actual contains an original_description and original_labels columns
-      if 'original_description' in actual.columns and 'original_labels' in actual.columns:
+      if 'original_description' in actual.columns and 'original_label' in actual.columns:
         print("Original columns found")
 
         print(expected)
@@ -341,9 +345,32 @@ class MLighter:
 
         actual['expected_labels'] = expected[actual.index]
 
-        actual['expected'] = actual.apply(lambda row: row['label'] in row['expected_labels'], axis=1)
+        actual['variant_expected'] = actual.apply(lambda row: row['label'] in row['expected_labels'], axis=1)
+        actual['original_expected'] = actual.apply(lambda row: row['original_label'] in row['expected_labels'], axis=1)
 
+        actual['expected_label'] = None
+        actual.loc[actual['variant_expected'], 'expected_label'] = actual.loc[actual['variant_expected'], 'label']
+        actual.loc[actual['original_expected'], 'expected_label'] = actual.loc[actual['original_expected'], 'original_label']
 
+        actual.drop(columns=['expected_labels'], inplace=True)
+
+        expected = expected.apply(ast.literal_eval)
+
+        for idx, labels in expected.items():
+          for label in labels:
+            if label not in actual.loc[actual['idx'] == idx, 'label'].values:
+              actual = pd.concat([actual, pd.DataFrame({'description': actual.loc[actual['idx'] == idx, 'description'].values[0],
+                                                      'original_description': actual.loc[actual['idx'] == idx, 'original_description'].values[0],
+                                                      'label': None,
+                                                      'prediction': 0.0,
+                                                      'original_label': None,
+                                                      'original_prediction': 0.0,
+                                                      'variant_expected': False,
+                                                      'original_expected': False,
+                                                      'expected_label': label,
+                                                      }, index=[0])])
+
+        return actual
       else:
         print("Original columns not found")
         actual['expected_labels'] = expected[actual.index]
