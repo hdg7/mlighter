@@ -68,13 +68,20 @@ RUN pip3 install --upgrade pip
 RUN pip3 install numpy jupyter pandas joblib xgboost scikit-image scikit-learn python-afl voila ipyvuetify jupyter_contrib_nbextensions voila-vuetify bqplot deap
 RUN pip3 install ipywidgets
 RUN pip3 install transformers torch
+RUN pip3 install ipywidgets ollama
+
+#Installing Ollama
+RUN curl -fsSL https://ollama.com/install.sh | sh
+RUN pip3 install ipyflex plotly
 
 WORKDIR /home/advml/
 RUN mkdir /home/advml/outputs
 COPY mlighter /home/advml/mlighter
+RUN mkdir /root/models
 
 #Installing the python mlighter-utils
 RUN ./mlighter/utils/install.sh
+
 
 ADD initScript.bash /home/advml/mlighter/initScript.bash 
 WORKDIR /home/advml/mlighter
@@ -84,8 +91,10 @@ ENV MLIGHTER_FOLDER=/home/advml/outputs
 ENV AFL_SKIP_CPUFREQ=1
 ENV AFL_I_DONT_CARE_ABOUT_MISSING_CRASHES=1
 RUN chmod 755 /home/advml/mlighter/initScript.bash
+RUN chown -R advml:advml *
 #For Windows users
 RUN sed -i -e 's/\r$//' /home/advml/mlighter/initScript.bash
-CMD ["/home/advml/mlighter/initScript.bash"]
+ENTRYPOINT ["/home/advml/mlighter/initScript.bash"]
+CMD ["echo","Default argument for CMD instruction"]
 #USER root
 
