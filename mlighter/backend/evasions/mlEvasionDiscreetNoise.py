@@ -27,6 +27,7 @@ class MLEvasionDiscreteNoise(MLEvasion):
     def setShift(self, shift):
         self.shift = shift
 
+<<<<<<< HEAD
     def transformationSetup(self, config):
         self.numberVariants = config["numberVariants"]
         self.noise = config["noise"]
@@ -57,3 +58,45 @@ class MLEvasionDiscreteNoise(MLEvasion):
         transformations = transformations * np.asarray(self.featureSelection)
         variants = inputVal + transformations
         return variants
+=======
+    def transformationSetup(self,config):
+        self.numberVariants=config["numberVariants"]
+        self.noise=config["noise"]
+        self.featureSelection=config["features"]
+        self.shift=config["shift"]
+        
+    def genVariants(self,data):
+        # Creates an array where the ith element contains the index of the original input
+        self.origin_map = np.tile(np.arange(len(data)), self.numberVariants)
+
+        variableInput = data
+        inputVal=np.asmatrix(variableInput)
+
+        total=[]
+        for i in range(self.numberVariants):
+            total.append([inputVal])
+
+
+        inputVal = np.block(total)
+        print(inputVal)
+
+        transformations = np.random.randint(self.noise+1, size=(len(inputVal), len(self.featureSelection))) + self.shift
+        transformations = transformations * np.asarray(self.featureSelection)
+        variants = inputVal + transformations
+        return variants
+
+    def get_config(self):
+
+        return {
+            "number_variants": self.numberVariants,
+            "noise": self.noise,
+            "features": self.featureSelection,
+            "shift": self.shift
+        }
+
+    def get_name(self):
+        return "Discreet Noise"
+
+    def get_variant_original(self, index):
+        return self.origin_map[index]
+>>>>>>> main

@@ -26,9 +26,24 @@ class MLEvasion:
     def transformationSetup(self, config):
         raise NotImplementedError("Please Implement this method")
 
+<<<<<<< HEAD
     def genVariants(self, data):
         raise NotImplementedError("Please Implement this method")
 
     # Number of variants per input
     def setNumberVariants(self, numberVariants):
         self.numberVariants = numberVariants
+=======
+    #Number of variants per input
+    def setNumberVariants(self,numberVariants):
+        self.numberVariants=numberVariants
+
+    def get_config(self):
+        raise NotImplementedError("Please Implement this method")
+
+    def get_name(self):
+        raise NotImplementedError("Please Implement this method")
+
+    def get_variant_original(self, index):
+        raise NotImplementedError("Please Implement this method")
+>>>>>>> main

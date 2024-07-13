@@ -18,13 +18,23 @@
 #  More details.
 
 
+<<<<<<< HEAD
 class MLDataset:
     def __init__(self, name):
+=======
+    def __init__(self,name):
+        print("Creating Dataset with name: ",name)
+>>>>>>> main
         self.name = name
 
     # Transformation is an MLEvasion type
     def transform(self, transformation, oriVariant=None):
+<<<<<<< HEAD
         if oriVariant is None:
+=======
+        self.transformation = transformation
+        if(oriVariant is None):
+>>>>>>> main
             self.variants = transformation.genVariants(self.data)
         else:
             self.variants = transformation.genVariants(self.data, oriVariant)

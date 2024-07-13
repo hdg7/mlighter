@@ -23,7 +23,7 @@ https://vimeo.com/678127987?embedded=true&source=vimeo_logo&owner=4798738
 
 If you use MLighter, please cite the paper:
 
-*Menendez, Hector D. (2022). Measuring Machine Learning Robustness in front of Static and Dynamic Adversaries. In Measuring Machine Learning Robustness in front of Static and Dynamic Adversaries. IEEE 34rd International Conference on Tools with Artificial Intelligence (ICTAI).*
+*Menendez, Hector D. (2022). Measuring Machine Learning Robustness in front of Static and Dynamic Adversaries. In Measuring Machine Learning Robustness in front of Static and Dynamic Adversaries. IEEE 34th International Conference on Tools with Artificial Intelligence (ICTAI).*
 
 ```
 @incollection{menendez2022measuring,
@@ -55,9 +55,70 @@ The User Interface is based on Vue and Voila. It is performed in top of a dashbo
 
 Please check the docker file if you want to see the specific libraries that you need to install. We have tested the system in 8064 architectures, but we are aware that Arm64 architectures are not compatible with the libraries of the Docker file.
 
+In order to run the code testing, you will need to install mlighter-utils, which can be done with:
+```bash
+./mlighter/utils/install.sh
+```
+
+
+## Running Docker
+
+If you want to create and run the docker file, you should use:
+```
+docker build . --network=host --tag=mlighter
+```
+
+If you need to run it use:
+```
+docker run --network host -it mlighter:latest
+```
+
+However, if you need to take outputs form the testing code section, you can use a local folder with 
+
+```
+docker run --network host -v ~/outputs_test:/home/advml/outputs \
+  -it mlighter:latest
+```
+
+If you need to run docker with GPU support you just need to include your graphics information on the command. This is important if you want to test PyTorch or TensorFlow models / implementations:
+
+```
+docker run --network host --runtime=nvidia --gpus all -v ~/outputs_test:/home/advml/outputs  -it mlighter:latest 
+```
+
+If you do not have docker-Nvidia working, please check the end of this README.
+
+Once docker is running, it will activate the GUI, you can access through the browser in: localhost:8888
+
 ## Running MLigther as a library
 
 Please check the tests to see some examples.
+
+## Troubleshooting
+
+Some of the common problems with the system are:
+
+### Docker and NVidia are not compatible
+
+This is an example about how to install docker-nvidia in Ubuntu. You need to start by adding the apt sources of NVidia:
+
+```
+distribution=$(. /etc/os-release;echo $ID$VERSION_ID) \
+      && curl -fsSL https://nvidia.github.io/libnvidia-container/gpgkey | sudo gpg --dearmor -o /usr/share/keyrings/nvidia-container-toolkit-keyring.gpg \
+      && curl -s -L https://nvidia.github.io/libnvidia-container/$distribution/libnvidia-container.list | \
+            sed 's#deb https://#deb [signed-by=/usr/share/keyrings/nvidia-container-toolkit-keyring.gpg] https://#g' | \
+            sudo tee /etc/apt/sources.list.d/nvidia-container-toolkit.list
+```
+
+Then you can install it and restart docker. Be careful, all of your containers will be restarted.
+```
+sudo apt-get update
+sudo apt-get install -y nvidia-docker2
+sudo apt-get install nvidia-container-toolkit-base
+sudo nvidia-ctk runtime configure --runtime=docker
+sudo systemctl daemon-reload
+sudo systemctl restart docker
+```
 
 ## Pending Tasks
 
@@ -72,6 +133,9 @@ We have a lists of pending task that we are aware. Some examples are:
 
 We aim to cover some of these tasks during 2023. 
 
+<<<<<<< HEAD
 # Developers
 
 Please push commits to dev bracnh
+=======
+>>>>>>> main

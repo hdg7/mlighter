@@ -1,5 +1,5 @@
 ## @package MLigther
-#    Copyright 2022 Hector D. Menendez
+#    Copyright 2022 Hector D. Menendez, Aidan Dakhama
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -17,19 +17,12 @@
 #
 #  More details.
 
+from .mlDataStructure import MLDataStructure
 
-class MLModel:
-    def __init__(self, name):
-        self.name = name
-<<<<<<< HEAD
-=======
-        
-    def predict(self,sample, original_text=None):
-        return self.model.predict(sample);
->>>>>>> main
-
-    def predict(self, sample):
-        return self.model.predict(sample)
-
-    def predict_proba(self, sample):
-        return self.model.predict_proba(sample)
+class MLDataDescription(MLDataStructure):
+    def transform(self, transformation, oriVariant=None):
+        self.transformation = transformation
+        if(oriVariant is None):
+            raise NotImplementedError("oriVariant is None")
+        else:
+           raise NotImplementedError("oriVariant is not None")
