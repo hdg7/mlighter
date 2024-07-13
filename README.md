@@ -71,3 +71,7 @@ We have a lists of pending task that we are aware. Some examples are:
 * Extend the interface to TensorFlow and PyTorch.
 
 We aim to cover some of these tasks during 2023. 
+
+# Developers
+
+Please push commits to dev bracnh
