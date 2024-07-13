@@ -135,4 +135,10 @@ We aim to cover some of these tasks during 2023.
 
 ## Developers
 
-Please use the dev branch instead of main for branching and create new features
+The repository aims to follow a Gitflow approach. Please use the dev branch instead of main for branching and create new features. The branches are organised as follow:
+- main: deployment branch should be always functional.
+- dev: for development, for new features create a new branch from dev.
+- hotfix-*: for fixing specific bugs found in main, make a pull request once merge.
+- feature-*: for new features. Please derive from dev.
+- release-*: for new releases. Please derive from dev.
+
