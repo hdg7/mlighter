@@ -133,3 +133,6 @@ We have a lists of pending task that we are aware. Some examples are:
 
 We aim to cover some of these tasks during 2023. 
 
+## Developers
+
+Please use the dev branch instead of main for branching and create new features
