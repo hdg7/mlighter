@@ -9,15 +9,6 @@ RUN apt-get install -yq gfortran libreadline-dev zlib1g-dev librust-bzip2-dev li
 #Support packages for Python
 RUN apt-get install -y libreadline-dev libncursesw5-dev libssl-dev libsqlite3-dev tk-dev libgdbm-dev libc6-dev libbz2-dev libffi-dev
 
-#For compilation with C/AFL++
-RUN apt-get install -y texlive texinfo texlive-latex-extra texlive-fonts-recommended texlive-fonts-extra
-
-#Need Java for AFL
-RUN apt-get install -y openjdk-17-jdk
-# Set JAVA_HOME environment variable
-ENV JAVA_HOME /usr/lib/jvm/java-17-openjdk-amd64
-# Update PATH environment variable
-ENV PATH $JAVA_HOME/bin:$PATH
 
 RUN useradd -ms /bin/bash advml 
 
