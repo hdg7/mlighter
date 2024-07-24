@@ -73,17 +73,24 @@ If you need to run it use:
 docker run --network host -it mlighter:latest
 ```
 
+There are four options for running the container: Deploy, Develop, debug and model. To use them open the container directly and run the app, use deploy:
+```
+sudo docker run -it --rm -p 8888:8888 mlighter:latest deploy 
+```
+
+If you want to activate it as a library, use develop and this will activate a Jupyter notebook. Debug will open a bash to access the container. Finally, model will allow to use ollama models.
+
 However, if you need to take outputs form the testing code section, you can use a local folder with 
 
 ```
 docker run --network host -v ~/outputs_test:/home/advml/outputs \
-  -it mlighter:latest
+  -it mlighter:latest deploy
 ```
 
 If you need to run docker with GPU support you just need to include your graphics information on the command. This is important if you want to test PyTorch or TensorFlow models / implementations:
 
 ```
-docker run --network host --runtime=nvidia --gpus all -v ~/outputs_test:/home/advml/outputs  -it mlighter:latest 
+docker run --network host --runtime=nvidia --gpus all -v ~/outputs_test:/home/advml/outputs  -it mlighter:latest deploy
 ```
 
 If you do not have docker-Nvidia working, please check the end of this README.
