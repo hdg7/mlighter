@@ -21,16 +21,17 @@ WORKDIR /home/advml/AFLplusplus
 RUN make
 USER root
 RUN make install
-#RUN 
 
 #Install the R-project
 USER advml
 WORKDIR /home/advml/
-RUN wget https://cloud.r-project.org/src/base/R-4/R-4.3.1.tar.gz
-RUN tar xvzf R-4.3.1.tar.gz
-WORKDIR /home/advml/R-4.3.1
+RUN wget https://cloud.r-project.org/src/base/R-4/R-4.4.1.tar.gz
+RUN tar xvzf R-4.4.1.tar.gz
+WORKDIR /home/advml/R-4.4.1
 RUN CC=/home/advml/AFLplusplus/afl-gcc CXX=/home/advml/AFLplusplus/afl-g++ CFLAGS="-g -O0" ./configure --with-x=no --enable-static --disable-shared
-RUN AFL_USE_ASAN=1 make
+#Docker might not allow to compile R with ASAN
+#RUN AFL_USE_ASAN=1 make
+RUN make
 USER root
 RUN make install
 
