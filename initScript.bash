@@ -21,6 +21,9 @@ then
 		i=$?
 		echo $i
 	done
+elif [ "$A" == "script" ];
+then
+    bash $2
 else
 	echo "unknown input"
 fi
