@@ -25,15 +25,15 @@ RUN make install
 #Install the R-project
 USER advml
 WORKDIR /home/advml/
-RUN wget https://cloud.r-project.org/src/base/R-4/R-4.4.1.tar.gz
-RUN tar xvzf R-4.4.1.tar.gz
-WORKDIR /home/advml/R-4.4.1
-RUN CC=/home/advml/AFLplusplus/afl-gcc CXX=/home/advml/AFLplusplus/afl-g++ CFLAGS="-g -O0" ./configure --with-x=no --enable-static --disable-shared
+RUN wget https://cloud.r-project.org/src/base/R-4/R-4.4.3.tar.gz
+RUN tar xvzf R-4.4.3.tar.gz
+WORKDIR /home/advml/R-4.4.3
+RUN CC=/home/advml/AFLplusplus/afl-clang-fast CXX=/home/advml/AFLplusplus/afl-clang-fast++ CFLAGS="-g -O0" ./configure --with-x=no --enable-static --disable-shared
 #Docker might not allow to compile R with ASAN
 #RUN AFL_USE_ASAN=1 make
-RUN make
+RUN AFL_IGNORE_PROBLEMS=1  AFL_IGNORE_PROBLEMS_COVERAGE=1 make
 USER root
-RUN make install
+RUN AFL_IGNORE_PROBLEMS=1  AFL_IGNORE_PROBLEMS_COVERAGE=1 make install
 
 
 #Install Python
@@ -42,30 +42,32 @@ WORKDIR /home/advml
 RUN curl -O https://www.python.org/ftp/python/3.10.12/Python-3.10.12.tgz
 RUN tar -xvzf Python-3.10.12.tgz
 WORKDIR /home/advml/Python-3.10.12
-RUN CC=/home/advml/AFLplusplus/afl-gcc CXX=/home/advml/AFLplusplus/afl-g++ ./configure --enable-static --disable-shared
-RUN make
+RUN CC=/home/advml/AFLplusplus/afl-clang-fast CXX=/home/advml/AFLplusplus/afl-clang-fast++ ./configure --enable-static --disable-shared
+RUN AFL_IGNORE_PROBLEMS=1  AFL_IGNORE_PROBLEMS_COVERAGE=1 make
 USER root
-RUN make install
+RUN AFL_IGNORE_PROBLEMS=1  AFL_IGNORE_PROBLEMS_COVERAGE=1  make install
 
 
-#Install Crashwalk
+# #Install Crashwalk
 
-WORKDIR /home/advml
-RUN wget https://go.dev/dl/go1.21.3.linux-amd64.tar.gz
-USER root
-RUN tar -C /usr/local -xzf go1.21.3.linux-amd64.tar.gz
-ENV PATH=$PATH:/usr/local/go/bin
-RUN git clone https://github.com/jfoote/exploitable.git
-USER root
-WORKDIR /home/advml/exploitable/
-RUN python3 setup.py install
-USER advml
-ENV CW_EXPLOITABLE=/home/advml/exploitable/exploitable/exploitable.py
-RUN go install github.com/bnagy/crashwalk/cmd/...@latest
+# WORKDIR /home/advml
+# RUN wget https://go.dev/dl/go1.21.3.linux-amd64.tar.gz
+# USER root
+# RUN tar -C /usr/local -xzf go1.21.3.linux-amd64.tar.gz
+# ENV PATH=$PATH:/usr/local/go/bin
+# RUN git clone https://github.com/jfoote/exploitable.git
+# USER root
+# WORKDIR /home/advml/exploitable/
+# RUN python3 setup.py install
+# USER advml
+# ENV CW_EXPLOITABLE=/home/advml/exploitable/exploitable/exploitable.py
+# RUN go install github.com/bnagy/crashwalk/cmd/...@latest
 
 
 #Installing the jupyter interface
 USER root
+ENV AFL_IGNORE_PROBLEMS=1
+ENV AFL_IGNORE_PROBLEMS_COVERAGE=1
 RUN pip3 install --upgrade pip
 RUN pip3 install numpy jupyter pandas joblib xgboost scikit-image scikit-learn python-afl voila ipyvuetify jupyter_contrib_nbextensions voila-vuetify bqplot deap 
 RUN pip3 install ipywidgets
