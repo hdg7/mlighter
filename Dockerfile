@@ -9,7 +9,6 @@ RUN apt-get install -yq gfortran libreadline-dev zlib1g-dev librust-bzip2-dev li
 #Support packages for Python
 RUN apt-get install -y libreadline-dev libncursesw5-dev libssl-dev libsqlite3-dev tk-dev libgdbm-dev libc6-dev libbz2-dev libffi-dev
 
-
 RUN useradd -ms /bin/bash advml 
 
 USER advml
@@ -28,13 +27,14 @@ WORKDIR /home/advml/
 RUN wget https://cloud.r-project.org/src/base/R-4/R-4.4.3.tar.gz
 RUN tar xvzf R-4.4.3.tar.gz
 WORKDIR /home/advml/R-4.4.3
-RUN CC=/home/advml/AFLplusplus/afl-clang-fast CXX=/home/advml/AFLplusplus/afl-clang-fast++ CFLAGS="-g -O0" ./configure --with-x=no --enable-static --disable-shared
+RUN CC=/home/advml/AFLplusplus/afl-clang-lto CXX=/home/advml/AFLplusplus/afl-clang-lto++ CFLAGS="-g -O0" ./configure --with-x=no --enable-static --disable-shared
 #Docker might not allow to compile R with ASAN
 #RUN AFL_USE_ASAN=1 make
-RUN AFL_IGNORE_PROBLEMS=1  AFL_IGNORE_PROBLEMS_COVERAGE=1 make
+#RUN AFL_IGNORE_PROBLEMS=1  AFL_IGNORE_PROBLEMS_COVERAGE=1 make
+RUN make
 USER root
-RUN AFL_IGNORE_PROBLEMS=1  AFL_IGNORE_PROBLEMS_COVERAGE=1 make install
-
+#RUN AFL_IGNORE_PROBLEMS=1  AFL_IGNORE_PROBLEMS_COVERAGE=1 make install
+RUN make install
 
 #Install Python
 USER advml
